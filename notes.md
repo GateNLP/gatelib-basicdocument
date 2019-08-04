@@ -15,3 +15,13 @@ General design ideas:
 * Spans are immutable, like text
 * Text is optional (may be null) 
 * Can a span be optional? probably not.
+
+
+## Modes of update 
+
+Things one may want to do:
+* for a given set of annotations, set all the features in the feature map
+* add a bunch of new annotations.
+* for a given set of annotations, remote all the features in the feature map
+* remove a bunch of existing annotations
+* text cannot be updated
