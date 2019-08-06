@@ -33,3 +33,10 @@ Things one may want to do:
 * in theory we could add "update hints" to each of the data structures represented in our json document, e.g.
   an annotation could have an additional update hint field which tells how the annotation should get used when 
   merging with another document
+
+## Kinds of applications and operations needed by them
+
+* POS Tagger:
+  * for a given set of annotations, update a feature
+* NER:
+  * add a set of annotations
