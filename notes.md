@@ -20,8 +20,16 @@ General design ideas:
 ## Modes of update 
 
 Things one may want to do:
-* for a given set of annotations, set all the features in the feature map
-* add a bunch of new annotations.
-* for a given set of annotations, remote all the features in the feature map
-* remove a bunch of existing annotations
+* for a given set of existing annotations, set one or more features in the feature map
+* (for a given annotation, update offset and/or type: for this we need same modes as for deleting)
+* add a bunch of new annotations to an annotation set 
+* for a given set of annotations, remove all the features in the feature map
+* remove annotations from an annotation set:
+  * by matching annotation id
+  * by matching type and span
+  * by subsumption: type and span match and all features that exist in the comparison feature set are present
+    and have the same value in the target annotation
 * text cannot be updated
+* in theory we could add "update hints" to each of the data structures represented in our json document, e.g.
+  an annotation could have an additional update hint field which tells how the annotation should get used when 
+  merging with another document
