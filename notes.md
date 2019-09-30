@@ -1,6 +1,12 @@
 # Design and implementation notes
 
-General design ideas:
+Updated design ideas:
+* represent the gate document as something that only uses Map, List, and the basic types that can be represented in JSON
+* For updating documents, use something like the representation used by the python plugin
+
+
+
+These were the old design ideas:
 * make document text immutable. Need to construct another document with the desired 
   text and merge the annotations to actually change the text
 * Make merging easy: doc1.mergeDocument(doc2, ADDORUPDATE) 
