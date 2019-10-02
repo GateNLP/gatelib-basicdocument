@@ -6,6 +6,8 @@
 package gate.lib.jsondocument;
 
 import gate.util.GateRuntimeException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple class to map offsets between UTF16 and character sequences.
@@ -15,35 +17,45 @@ import gate.util.GateRuntimeException;
  * representation of the string and a Unicode character sequence 
  * representation of the String. 
  * 
- * This will assume one specific way for how to normalise the unicode
- * character sequence corresponding to the java string and will assume 
- * that the string passed was normalised in the same way as the normalise()
- * method does.
- * 
- * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
 public class OffsetMapper {
-  private String string;
-  private int[] java2ext_cache;
-  private int[] ext2java_cache;
+  private int[] java2python;
+  private int[] python2java;
+  /**
+   * Disallow no-argument constructor.
+   */
   private OffsetMapper() {}
   private void cache(String str) {
-    this.string = str;
-    // first create temporary lists that contains the offsets where 
-    // the other representation changes and by how much, then from those
-    // create the actual index cache (because then we know the size!)
+    List<Integer> java2python_list = new ArrayList<Integer>();
+    List<Integer> python2java_list = new ArrayList<Integer>();
+    
+    int off_p = 0;  // in this we keep track of the corresponding python off
+    for (int i=0; i<str.length(); i++) {
+      char ch = str.charAt(i);      
+      java2python_list.add(off_p);       
+      if(Character.isHighSurrogate(ch)) {
+        // first of the two, we do not increment off_p after this one
+        // however if we get the first one, we add the current java offset
+        // to the python2java table
+        python2java_list.add(i);
+      } else if(Character.isLowSurrogate(ch)) {
+        off_p += 1;
+        // do not add to python2java
+      } else {
+        off_p += 1;
+        python2java_list.add(i);
+      }
+    }
+    java2python = 
+            java2python_list.parallelStream().
+                    mapToInt(Integer::intValue).toArray();
+    python2java = 
+            java2python_list.parallelStream().
+                    mapToInt(Integer::intValue).toArray();
   }
   public OffsetMapper(String string) {
     cache(string);
-  }
-  
-  public void init(String string) {
-    cache(string);
-  }
-  
-  public static String normalise(String string) {
-    return string;
   }
   
   public int java2ext(int offset) {

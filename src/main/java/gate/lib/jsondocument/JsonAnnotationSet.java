@@ -15,16 +15,14 @@ public class JsonAnnotationSet {
   
   /**
    * The annotation set name: the empty string corresponds to the "default
-   * annotation set" while a null value as usual represents a "do not care"/
-   * "unknown" value.
+   * annotation set".
    */
   protected String name; 
   
   protected List<JsonAnnotation> annotations;
   
   // For partial annotation sets, contains the id to use for new
-  // annotations. If this is not set, whatever mechanism for assigning the 
-  // ids is used. 
-  protected Integer startId; 
+  // annotations. 
+  protected Integer max_annid; 
   
 }

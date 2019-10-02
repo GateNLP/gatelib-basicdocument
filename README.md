@@ -1,2 +1,4 @@
 # gatelib-jsondocument
-Serialise and deserialise GATE documents as json, manipulate the JSON-based representation
+
+Serialise and deserialise GATE documents as JSON. 
+Also deserialise ChengeLog objects from python and apply to GATE documents.

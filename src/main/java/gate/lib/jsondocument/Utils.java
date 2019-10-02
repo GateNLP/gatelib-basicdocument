@@ -13,11 +13,11 @@ public class Utils {
   public static Map<String, Object> featureMap2Map(FeatureMap fm) {
     Map<String, Object> ret = new HashMap<>();
     for(Object k : fm.keySet()) {
-      if (k instanceof String) {
-        ret.put((String)k, fm.get(k));
-      } else {
-        ret.put(k.toString(), fm.get(k));
+      if (k == null) {
+        // we ignore null keys here, if we have any
+        continue;
       }
+      ret.put((k instanceof String) ? (String)k : k.toString(), fm.get(k));
     }
     return ret; 
   }
