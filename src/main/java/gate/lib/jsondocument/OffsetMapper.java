@@ -58,17 +58,17 @@ public class OffsetMapper {
     cache(string);
   }
   
-  public int java2ext(int offset) {
-    if(offset >= 0 && offset < java2ext_cache.length) {
-      return this.java2ext(offset);
+  public int convertToPython(int offset) {
+    if(offset >= 0 && offset < java2python.length) {
+      return java2python[offset];
     } else {
       throw new GateRuntimeException("Attempt to find offset outside of range");
     }
   }
 
-  public int ext2java(int offset) {
-    if(offset >= 0 && offset < ext2java_cache.length) {
-      return this.java2ext(offset);
+  public int convertToJava(int offset) {
+    if(offset >= 0 && offset < python2java.length) {
+      return python2java[offset];
     } else {
       throw new GateRuntimeException("Attempt to find offset outside of range");
     }

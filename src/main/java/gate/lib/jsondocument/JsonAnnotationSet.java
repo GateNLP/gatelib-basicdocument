@@ -17,12 +17,12 @@ public class JsonAnnotationSet {
    * The annotation set name: the empty string corresponds to the "default
    * annotation set".
    */
-  protected String name; 
+  public String name; 
   
-  protected List<JsonAnnotation> annotations;
+  public List<JsonAnnotation> annotations;
   
   // For partial annotation sets, contains the id to use for new
   // annotations. 
-  protected Integer max_annid; 
+  public Integer max_annid; 
   
 }
