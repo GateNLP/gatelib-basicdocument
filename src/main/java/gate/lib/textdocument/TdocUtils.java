@@ -1,4 +1,4 @@
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import gate.FeatureMap;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map;
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class Utils {
+public class TdocUtils {
   /**
    * Add features from the original feature map into the given map or a new map.
    * 

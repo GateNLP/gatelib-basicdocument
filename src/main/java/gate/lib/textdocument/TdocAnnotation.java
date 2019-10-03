@@ -1,4 +1,4 @@
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import gate.Annotation;
 import java.util.Map;
@@ -8,14 +8,14 @@ import java.util.Map;
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-class JsonAnnotation {
+class TdocAnnotation {
   
-  public static JsonAnnotation fromGateAnnotation(Annotation ann) {
-    JsonAnnotation ret = new JsonAnnotation();
+  public static TdocAnnotation fromGateAnnotation(Annotation ann) {
+    TdocAnnotation ret = new TdocAnnotation();
     ret.type = ann.getType();
     ret.start = ann.getStartNode().getOffset().intValue();
     ret.end = ann.getEndNode().getOffset().intValue();
-    ret.features = Utils.featureMap2Map(ann.getFeatures(), null);
+    ret.features = TdocUtils.featureMap2Map(ann.getFeatures(), null);
     ret.id = ann.getId();
     return ret;
   }

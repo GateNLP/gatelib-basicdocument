@@ -1,4 +1,4 @@
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import org.apache.log4j.Logger;
 import java.util.Map;
@@ -8,11 +8,11 @@ import java.util.Map;
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class JsonDocument
+public class TdocDocument
 {
 
   private static final Logger LOGGER = 
-          Logger.getLogger(JsonDocument.class.getName());
+          Logger.getLogger(TdocDocument.class.getName());
 
   // Fields used to represent the various parts of documents
   // NOTE: the value null for each of these fields gets interpreted depending
@@ -36,7 +36,7 @@ public class JsonDocument
   /**
    * Map from annotation set name to annotation set with that name. 
    */
-  public Map<String, JsonAnnotationSet> annotation_sets;
+  public Map<String, TdocAnnotationSet> annotation_sets;
   
   /**
    * Indicates the style of offsets used in this document.
@@ -64,8 +64,8 @@ public class JsonDocument
     // create the offset mapper
     OffsetMapper om = new OffsetMapper(this.text);
     // go through all annotation sets and all annotations and fix them
-    for(JsonAnnotationSet annset : annotation_sets.values()) {
-      for(JsonAnnotation ann : annset.annotations) {
+    for(TdocAnnotationSet annset : annotation_sets.values()) {
+      for(TdocAnnotation ann : annset.annotations) {
         if(newtype == "p") {
           ann.start = om.convertToPython(ann.start);
           ann.end = om.convertToPython(ann.end);

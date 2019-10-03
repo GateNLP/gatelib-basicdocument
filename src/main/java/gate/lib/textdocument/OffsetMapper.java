@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import gate.util.GateRuntimeException;
 import java.util.ArrayList;

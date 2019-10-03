@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import gate.Annotation;
@@ -27,7 +27,7 @@ import java.util.Set;
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class JsonDocumentBuilder {
+public class TdocDocumentBuilder {
   
   String text;
   Map<String,Set<Annotation>> includedSets = new HashMap<>();
@@ -36,7 +36,7 @@ public class JsonDocumentBuilder {
   String offset_type = "j";
   List<JSON.Feature> addJSONFeatures = new ArrayList<>();
 
-  public JsonDocumentBuilder() {
+  public TdocDocumentBuilder() {
   }
 
   /**
@@ -48,14 +48,14 @@ public class JsonDocumentBuilder {
    * @param doc
    * @return 
    */
-  public JsonDocumentBuilder fromGate(Document doc) {
+  public TdocDocumentBuilder fromGate(Document doc) {
     // TODO: for now check that Document is a SimpleDocument
     this.text = doc.getContent().toString(); 
     includedSets.put("", doc.getAnnotations());
     for (String name : doc.getNamedAnnotationSets().keySet()) {      
       includedSets.put(name, doc.getAnnotations(name));
     }
-    Utils.featureMap2Map(doc.getFeatures(), includedFeatures);
+    TdocUtils.featureMap2Map(doc.getFeatures(), includedFeatures);
     return this;
   }
   
@@ -71,11 +71,11 @@ public class JsonDocumentBuilder {
    * @param name the name of the annotation set (this can differ from the 
    * original name if an annotation set is passed. Must not be null, the 
    * "default" set uses the empty string as name. 
-   * @param set a set of annotations, could be an AnnotationSet or a set
+   * @param annset a set of annotations, could be an AnnotationSet or a set
    * of annotations.
    * @return 
    */
-  public JsonDocumentBuilder addSet(String name, Set<Annotation> annset) {
+  public TdocDocumentBuilder addSet(String name, Set<Annotation> annset) {
     includedSets.put(name, annset);
     return this;
   }
@@ -98,8 +98,8 @@ public class JsonDocumentBuilder {
    * @param fm a map to interpret as a feature map
    * @return 
    */
-  public JsonDocumentBuilder addFeatures(Map<Object,Object> fm) {
-    Utils.featureMap2Map(fm, includedFeatures);
+  public TdocDocumentBuilder addFeatures(Map<Object,Object> fm) {
+    TdocUtils.featureMap2Map(fm, includedFeatures);
     return this;
   }
   
@@ -109,7 +109,7 @@ public class JsonDocumentBuilder {
    * @param value
    * @return 
    */
-  public JsonDocumentBuilder addFeature(String name, Object value) {
+  public TdocDocumentBuilder addFeature(String name, Object value) {
     includedFeatures.put(name, value);
     return this;
   }
@@ -118,7 +118,7 @@ public class JsonDocumentBuilder {
    * Make the JsonDocument use java offsets (the default). 
    * @return 
    */
-  public JsonDocumentBuilder javaOffsets() {
+  public TdocDocumentBuilder javaOffsets() {
     offset_type = "j";
     return this;
   }
@@ -131,13 +131,13 @@ public class JsonDocumentBuilder {
    * offsets of the added annotations, otherwise an exception is thrown. 
    * @return 
    */
-  public JsonDocumentBuilder pythonOffsets() {
+  public TdocDocumentBuilder pythonOffsets() {
     offset_type = "p";
     return this;
   }
   
   
-  public JsonDocumentBuilder withJSONFeature(JSON.Feature feature) {
+  public TdocDocumentBuilder withJSONFeature(JSON.Feature feature) {
     addJSONFeatures.add(feature);
     return this;
   }
@@ -146,21 +146,21 @@ public class JsonDocumentBuilder {
    * Given all the info accumulated, build a JsonDocument and return it.
    * @return 
    */
-  private JsonDocument buildJsonDoc() {
-    JsonDocument ret = new JsonDocument();
+  private TdocDocument buildJsonDoc() {
+    TdocDocument ret = new TdocDocument();
     ret.text = text;
     if(includedFeatures.size() > 0) {
       ret.features = includedFeatures;
     }
     if(includedSets.size() > 0) {
-      Map<String, JsonAnnotationSet> annotation_sets = new HashMap<>();
+      Map<String, TdocAnnotationSet> annotation_sets = new HashMap<>();
       for(String name : includedSets.keySet()) {        
-        JsonAnnotationSet annset = new JsonAnnotationSet();
+        TdocAnnotationSet annset = new TdocAnnotationSet();
         annset.name = name;
-        annset.annotations = new ArrayList<JsonAnnotation>();
+        annset.annotations = new ArrayList<TdocAnnotation>();
         int max_annid = -1;
         for (Annotation ann : includedSets.get(name)) {
-          JsonAnnotation jsonann = JsonAnnotation.fromGateAnnotation(ann);
+          TdocAnnotation jsonann = TdocAnnotation.fromGateAnnotation(ann);
           if(jsonann.id > max_annid) {
             max_annid = jsonann.id;
           }
@@ -186,7 +186,7 @@ public class JsonDocumentBuilder {
   
   public void toFile(File path) {
     try {
-      JsonDocument jsondoc = buildJsonDoc();
+      TdocDocument jsondoc = buildJsonDoc();
       initialJSON().composeTo(toFile);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
@@ -195,7 +195,7 @@ public class JsonDocumentBuilder {
   
   public void toWriter(Writer writer) {
     try {
-      JsonDocument jsondoc = buildJsonDoc();
+      TdocDocument jsondoc = buildJsonDoc();
       initialJSON().composeTo(writer);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
@@ -204,7 +204,7 @@ public class JsonDocumentBuilder {
   
   public void toOutputStream(OutputStream ostream) {
     try {
-      JsonDocument jsondoc = buildJsonDoc();
+      TdocDocument jsondoc = buildJsonDoc();
       initialJSON().composeTo(ostream);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
@@ -212,7 +212,7 @@ public class JsonDocumentBuilder {
   }
     public String asString() {
     try {
-      JsonDocument jsondoc = buildJsonDoc();
+      TdocDocument jsondoc = buildJsonDoc();
       return initialJSON().asString(jsondoc);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build JSON", ex);

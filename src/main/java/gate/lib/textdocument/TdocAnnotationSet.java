@@ -1,4 +1,4 @@
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class JsonAnnotationSet {
+public class TdocAnnotationSet {
   
   // Fields representing the various aspects of an annotation set
   
@@ -19,7 +19,7 @@ public class JsonAnnotationSet {
    */
   public String name; 
   
-  public List<JsonAnnotation> annotations;
+  public List<TdocAnnotation> annotations;
   
   // For partial annotation sets, contains the id to use for new
   // annotations. 
