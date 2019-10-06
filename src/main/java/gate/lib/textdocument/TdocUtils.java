@@ -1,6 +1,5 @@
 package gate.lib.textdocument;
 
-import gate.FeatureMap;
 import java.util.HashMap;
 import java.util.Map;
 
