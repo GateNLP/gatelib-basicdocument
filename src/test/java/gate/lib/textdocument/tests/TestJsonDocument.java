@@ -1,4 +1,4 @@
-package gate.lib.jsondocument.tests;
+package gate.lib.textdocument.tests;
 
 import org.junit.Assert;
 import org.junit.Test;

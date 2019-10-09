@@ -1,4 +1,4 @@
-package gate.lib.jsondocument;
+package gate.lib.textdocument;
 
 import java.util.List;
 
@@ -9,22 +9,20 @@ import java.util.List;
  *
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class JsonAnnotationSet {
+public class TdocAnnotationSet {
   
   // Fields representing the various aspects of an annotation set
   
   /**
    * The annotation set name: the empty string corresponds to the "default
-   * annotation set" while a null value as usual represents a "do not care"/
-   * "unknown" value.
+   * annotation set".
    */
-  protected String name; 
+  public String name; 
   
-  protected List<JsonAnnotation> annotations;
+  public List<TdocAnnotation> annotations;
   
   // For partial annotation sets, contains the id to use for new
-  // annotations. If this is not set, whatever mechanism for assigning the 
-  // ids is used. 
-  protected Integer startId; 
+  // annotations. 
+  public Integer max_annid; 
   
 }
