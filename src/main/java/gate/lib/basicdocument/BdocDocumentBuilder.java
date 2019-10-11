@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gate.lib.textdocument;
+package gate.lib.basicdocument;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import gate.Annotation;
@@ -27,7 +27,7 @@ import java.util.Set;
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class TdocDocumentBuilder {
+public class BdocDocumentBuilder {
   
   String text;
   Map<String,Set<Annotation>> includedSets = new HashMap<>();
@@ -36,7 +36,7 @@ public class TdocDocumentBuilder {
   String offset_type = "j";
   List<JSON.Feature> addJSONFeatures = new ArrayList<>();
 
-  public TdocDocumentBuilder() {
+  public BdocDocumentBuilder() {
   }
 
   /**
@@ -48,14 +48,14 @@ public class TdocDocumentBuilder {
    * @param doc
    * @return 
    */
-  public TdocDocumentBuilder fromGate(Document doc) {
+  public BdocDocumentBuilder fromGate(Document doc) {
     // TODO: for now check that Document is a SimpleDocument
     this.text = doc.getContent().toString(); 
     includedSets.put("", doc.getAnnotations());
     for (String name : doc.getNamedAnnotationSets().keySet()) {      
       includedSets.put(name, doc.getAnnotations(name));
     }
-    TdocUtils.featureMap2Map(doc.getFeatures(), includedFeatures);
+    BdocUtils.featureMap2Map(doc.getFeatures(), includedFeatures);
     return this;
   }
   
@@ -75,7 +75,7 @@ public class TdocDocumentBuilder {
    * of annotations.
    * @return 
    */
-  public TdocDocumentBuilder addSet(String name, Set<Annotation> annset) {
+  public BdocDocumentBuilder addSet(String name, Set<Annotation> annset) {
     includedSets.put(name, annset);
     return this;
   }
@@ -98,8 +98,8 @@ public class TdocDocumentBuilder {
    * @param fm a map to interpret as a feature map
    * @return 
    */
-  public TdocDocumentBuilder addFeatures(Map<Object,Object> fm) {
-    TdocUtils.featureMap2Map(fm, includedFeatures);
+  public BdocDocumentBuilder addFeatures(Map<Object,Object> fm) {
+    BdocUtils.featureMap2Map(fm, includedFeatures);
     return this;
   }
   
@@ -109,7 +109,7 @@ public class TdocDocumentBuilder {
    * @param value
    * @return 
    */
-  public TdocDocumentBuilder addFeature(String name, Object value) {
+  public BdocDocumentBuilder addFeature(String name, Object value) {
     includedFeatures.put(name, value);
     return this;
   }
@@ -118,7 +118,7 @@ public class TdocDocumentBuilder {
    * Make the JsonDocument use java offsets (the default). 
    * @return 
    */
-  public TdocDocumentBuilder javaOffsets() {
+  public BdocDocumentBuilder javaOffsets() {
     offset_type = "j";
     return this;
   }
@@ -131,13 +131,13 @@ public class TdocDocumentBuilder {
    * offsets of the added annotations, otherwise an exception is thrown. 
    * @return 
    */
-  public TdocDocumentBuilder pythonOffsets() {
+  public BdocDocumentBuilder pythonOffsets() {
     offset_type = "p";
     return this;
   }
   
   
-  public TdocDocumentBuilder withJSONFeature(JSON.Feature feature) {
+  public BdocDocumentBuilder withJSONFeature(JSON.Feature feature) {
     addJSONFeatures.add(feature);
     return this;
   }
@@ -146,25 +146,25 @@ public class TdocDocumentBuilder {
    * Given all the info accumulated, build a JsonDocument and return it.
    * @return 
    */
-  private TdocDocument buildJsonDoc() {
-    TdocDocument ret = new TdocDocument();
+  private BdocDocument buildBdoc() {
+    BdocDocument ret = new BdocDocument();
     ret.text = text;
     if(includedFeatures.size() > 0) {
       ret.features = includedFeatures;
     }
     if(includedSets.size() > 0) {
-      Map<String, TdocAnnotationSet> annotation_sets = new HashMap<>();
+      Map<String, BdocAnnotationSet> annotation_sets = new HashMap<>();
       for(String name : includedSets.keySet()) {        
-        TdocAnnotationSet annset = new TdocAnnotationSet();
+        BdocAnnotationSet annset = new BdocAnnotationSet();
         annset.name = name;
-        annset.annotations = new ArrayList<TdocAnnotation>();
+        annset.annotations = new ArrayList<BdocAnnotation>();
         int max_annid = -1;
         for (Annotation ann : includedSets.get(name)) {
-          TdocAnnotation jsonann = TdocAnnotation.fromGateAnnotation(ann);
-          if(jsonann.id > max_annid) {
-            max_annid = jsonann.id;
+          BdocAnnotation bdocann = BdocAnnotation.fromGateAnnotation(ann);
+          if(bdocann.id > max_annid) {
+            max_annid = bdocann.id;
           }
-          annset.annotations.add(jsonann);
+          annset.annotations.add(bdocann);
         }
         annset.max_annid = max_annid;
         annotation_sets.put(annset.name, annset);
@@ -175,8 +175,8 @@ public class TdocDocumentBuilder {
     return ret;
   }
   
-  // Various methods to create the final JSON representation
-  private JSON initialJSON() {
+  
+  public JSON initialJSON() {
     JSON jsonbuilder = JSON.std;
     for (JSON.Feature feature : addJSONFeatures) {
       jsonbuilder.with(feature);
@@ -186,7 +186,7 @@ public class TdocDocumentBuilder {
   
   public void toFile(File path) {
     try {
-      TdocDocument jsondoc = buildJsonDoc();
+      BdocDocument jsondoc = buildBdoc();
       initialJSON().composeTo(toFile);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
@@ -195,7 +195,7 @@ public class TdocDocumentBuilder {
   
   public void toWriter(Writer writer) {
     try {
-      TdocDocument jsondoc = buildJsonDoc();
+      BdocDocument jsondoc = buildBdoc();
       initialJSON().composeTo(writer);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
@@ -204,7 +204,7 @@ public class TdocDocumentBuilder {
   
   public void toOutputStream(OutputStream ostream) {
     try {
-      TdocDocument jsondoc = buildJsonDoc();
+      BdocDocument jsondoc = buildBdoc();
       initialJSON().composeTo(ostream);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
@@ -212,7 +212,7 @@ public class TdocDocumentBuilder {
   }
     public String asString() {
     try {
-      TdocDocument jsondoc = buildJsonDoc();
+      BdocDocument jsondoc = buildBdoc();
       return initialJSON().asString(jsondoc);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build JSON", ex);

@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gate.lib.textdocument.docformats;
+package gate.lib.basicdocument;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Support for serialising everything in the textdocument package to/from JSON
+ * Something that represents changes to a document.
  * @author johann
  */
-public class SimpleJson {
-  
+public class BdocChangeLog {
+  public List<Map<String, Object>> changes;
+  // TODO!
 }

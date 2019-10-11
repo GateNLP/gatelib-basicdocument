@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gate.lib.textdocument;
+package gate.lib.basicdocument;
 
 import gate.Annotation;
 import gate.AnnotationSet;
@@ -180,7 +180,7 @@ public class GateDocumentUpdater {
     
   }
   
-  private void addAnnotationSet(TdocAnnotationSet annset) {
+  private void addAnnotationSet(BdocAnnotationSet annset) {
     String setname = annset.name;
     AnnotationSet gateset;
     if(setname.equals("")) {
@@ -188,7 +188,7 @@ public class GateDocumentUpdater {
     } else {
       gateset = doc.getAnnotations(setname);
     }
-    for(TdocAnnotation tdocann : annset.annotations) {
+    for(BdocAnnotation tdocann : annset.annotations) {
       addAnnotation(gateset, 
               tdocann.id, tdocann.start, tdocann.end, tdocann.type, tdocann.features);
     }
@@ -199,9 +199,9 @@ public class GateDocumentUpdater {
    * 
    * This carries out the update with whatever options have been set.
    * 
-   * @param tdoc 
+   * @param tdoc the Tdoc to use for the updates
    */
-  public void fromTdocDocument(TdocDocument tdoc) {
+  public void fromTdocDocument(BdocDocument tdoc) {
     // can only assign features if there are any in the tdoc
     if(tdoc.features != null) {
       if(featurenames == null) {
@@ -231,9 +231,9 @@ public class GateDocumentUpdater {
    * 
    * This carries out the update with whatever options have been set.
    * 
-   * @param tdoc 
+   * @param log the changelog to use for the updates
    */
-  public void fromTdocChangeLog(TdocChangeLog log) {
+  public void fromTdocChangeLog(BdocChangeLog log) {
     for(Map<String, Object> chg : log.changes) {
       // features:clear
       // feature:set, feature, value
