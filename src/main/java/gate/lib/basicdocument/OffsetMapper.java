@@ -54,10 +54,22 @@ public class OffsetMapper {
             java2python_list.parallelStream().
                     mapToInt(Integer::intValue).toArray();
   }
+  
+  /**
+   * Create the offset mappings for the given string and cache them. 
+   * 
+   * @param string the string to use
+   */
   public OffsetMapper(String string) {
     cache(string);
   }
   
+  /**
+   * Convert the offset from Java to Python.
+   * 
+   * @param offset java offset
+   * @return  python offset
+   */
   public int convertToPython(int offset) {
     if(offset >= 0 && offset < java2python.length) {
       return java2python[offset];
@@ -66,6 +78,12 @@ public class OffsetMapper {
     }
   }
 
+  /**
+   * Convert the offset from Python to Java.
+   * 
+   * @param offset the python offset
+   * @return java offset
+   */
   public int convertToJava(int offset) {
     if(offset >= 0 && offset < python2java.length) {
       return python2java[offset];

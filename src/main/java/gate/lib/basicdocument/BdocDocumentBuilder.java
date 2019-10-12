@@ -33,8 +33,8 @@ import java.util.Set;
 public class BdocDocumentBuilder {
   
   String text;
-  Map<String,Set<Annotation>> includedSets = new HashMap<>();
-  Map<String, Object> includedFeatures = new HashMap<>();
+  HashMap<String,Set<Annotation>> includedSets = new HashMap<>();
+  HashMap<String, Object> includedFeatures = new HashMap<>();
   File toFile = null;
   String offset_type = "j";
   List<JSON.Feature> addJSONFeatures = new ArrayList<>();
@@ -131,7 +131,7 @@ public class BdocDocumentBuilder {
    * @return modified BdocDocumentBuilder
    */
   public BdocDocumentBuilder setAnnotationSetNames(Collection<String> names) {
-    Map<String,Set<Annotation>> newSets = new HashMap<>();
+    HashMap<String,Set<Annotation>> newSets = new HashMap<>();
     for (String tmpname : names) {
       if(includedSets.containsKey(tmpname)) {
         newSets.put(tmpname, includedSets.get(tmpname));
@@ -156,7 +156,7 @@ public class BdocDocumentBuilder {
    * @return modified BdocDocumentBuilder
    */
   public BdocDocumentBuilder setFeatureNames(Collection<String> featurenames) {
-    Map<String, Object> newFeatures = new HashMap<>();
+    HashMap<String, Object> newFeatures = new HashMap<>();
     for (String tmpname : featurenames) {
       if(includedFeatures.containsKey(tmpname)) {
         newFeatures.put(tmpname, includedFeatures.get(tmpname));
@@ -226,7 +226,7 @@ public class BdocDocumentBuilder {
       ret.features = includedFeatures;
     }
     if(includedSets.size() > 0) {
-      Map<String, BdocAnnotationSet> annotation_sets = new HashMap<>();
+      HashMap<String, BdocAnnotationSet> annotation_sets = new HashMap<>();
       for(String name : includedSets.keySet()) {     
         System.err.println("DEBUG: included set="+name+" set="+includedSets.get(name));
         BdocAnnotationSet annset = new BdocAnnotationSet();

@@ -19,6 +19,9 @@ public class BdocAnnotationSet {
    */
   public String name; 
   
+  /**
+   * The list of annotations in this set.
+   */
   public List<BdocAnnotation> annotations;
   
   // For partial annotation sets, contains the id to use for new

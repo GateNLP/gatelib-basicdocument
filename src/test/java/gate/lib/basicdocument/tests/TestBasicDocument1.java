@@ -10,7 +10,7 @@ import gate.lib.basicdocument.BdocAnnotationSet;
 import gate.lib.basicdocument.BdocAnnotation;
 import gate.lib.basicdocument.BdocDocument;
 import gate.lib.basicdocument.BdocDocumentBuilder;
-import gate.lib.basicdocument.docformats.BdocSimpleJson;
+import gate.lib.basicdocument.docformats.SimpleJson;
 import gate.util.GateException;
 import gate.util.InvalidOffsetException;
 import java.io.File;
@@ -78,8 +78,20 @@ public class TestBasicDocument1 extends TestCase {
     Assert.assertEquals(18, bann3.end);     // !!! one less because python!
     Assert.assertEquals("Token", bann3.type);
     
-    String json = new BdocSimpleJson().dumps(bdoc);
-    new BdocSimpleJson().dump(bdoc, new File("test-doc1.gate_sj"));
+    String json = new SimpleJson().dumps(bdoc);
+    new SimpleJson().dump(bdoc, new File("test-doc1.gate_sj"));
+    
+    
+    // try to re-create Bdoc from JSON
+    BdocDocument bdoc2 = new SimpleJson().loads_doc(json);
+    Assert.assertNotNull(bdoc2.annotation_sets);
+    System.err.println("annotation_sets: "+bdoc2.annotation_sets.getClass().getName());
+    Assert.assertTrue(bdoc2.annotation_sets.getClass().getName().equals("java.util.HashMap"));
+    Assert.assertTrue(bdoc2.annotation_sets.containsKey(""));
+    BdocAnnotationSet bset2 = bdoc2.annotation_sets.get("");
+    Assert.assertNotNull(bset2);
+    System.err.println("the set: "+bset2.getClass().getName());
+    Assert.assertTrue(bset2.getClass().getName().equals("gate.lib.basicdocument.BdocAnnotationSet"));
   }
   
   

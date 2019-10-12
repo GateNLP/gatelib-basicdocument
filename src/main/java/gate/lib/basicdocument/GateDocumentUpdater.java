@@ -17,65 +17,85 @@ import java.util.Set;
 
 /**
  * A class that allows to update a GATE document from a TextDocument
- * 
- * @author Johann Petrak johann.petrak@gmail.com 
+ *
+ * @author Johann Petrak johann.petrak@gmail.com
  */
 public class GateDocumentUpdater {
+
   /**
-   * What to do if an annotation to add already exists in the gate doc
+   * What to do if an annotation to add already exists in the gate gateDocument
    */
   public enum HandleExistingAnns {
-    REPLACE_ANNOTATION,  // completely replace with the new one
-    REPLACE_FEATURES,  // just completely replace the features 
-    UPDATE_FEATURES,  // add new and update existing features, do not delete any
-    ADD_NEW_FEATURES,  // only add new features
-    IGNORE,            // ignore that annotation, do nothing
+    /**
+     * Completely replace the annotation with the new one.
+     */
+    REPLACE_ANNOTATION, // completely replace with the new one
+    /**
+     * Completely replace the features of the existing annotation.
+     */
+    REPLACE_FEATURES, // just completely replace the features 
+    /**
+     * Add new and update existing features, do not delete any.
+     */
+    UPDATE_FEATURES, // add new and update existing features, do not delete any
+    /**
+     * Only add new features.
+     */
+    ADD_NEW_FEATURES, // only add new features
+    /**
+     * Ignore that annotation.
+     */
+    IGNORE, // ignore that annotation, do nothing
+    /**
+     * Add as a new annotation with a new id.
+     */
     ADD_WITH_NEW_ID,  // add that annotation with a new id
   }
-  private Document doc;
-  
+  private Document gateDocument;
+
   private HandleExistingAnns handleAnns = HandleExistingAnns.ADD_WITH_NEW_ID;
-  
+
   /**
    * If null, use all, otherwise the set of annotation set names to use.
    */
   private Set<String> annsetnames;
-  
+
   /**
    * If null, use all, otherwise the set of document feature names to use.
    */
   private Set<String> featurenames;
-  
+
   /**
-   * Create a document updater with the default options.
-   * Initially, all information from the update source except text will
-   * be used to update the GATE document. Use the noXxx() methods followed 
-   * by useXxx() methods to select a specific set of information. 
-   * 
-   * @param doc  the GATE document to update
+   * Create a document updater with the default options. Initially, all
+   * information from the update source except text will be used to update the
+   * GATE document. Use the noXxx() methods followed by useXxx() methods to
+   * select a specific set of information.
+   *
+   * @param doc the GATE document to update
    */
   public GateDocumentUpdater(Document doc) {
-    this.doc = doc;
-    
+    this.gateDocument = doc;
+
   }
-  
+
   // Methods to set options about how to update the document
   // These can be chained as necessary
-  
   /**
    * Set the current list of known annotation set names to add to empty.
-   * Initially, all annotation sets are added, this can be used to 
-   * start giving an explicit list of annotation set names to use by 
-   * subsequently calling useAnnotationSet(name)
+   * Initially, all annotation sets are added, this can be used to start giving
+   * an explicit list of annotation set names to use by subsequently calling
+   * useAnnotationSet(name)
+   *
    * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater noAnnotationSet() {
-    annsetnames = new HashSet<String>();
+    annsetnames = new HashSet<>();
     return this;
   }
-  
+
   /**
    * Include this annotation set in the updates.
+   *
    * @param name name of annotation set to include
    * @return modified GateDocumentUpdater
    */
@@ -83,168 +103,171 @@ public class GateDocumentUpdater {
     annsetnames.add(name);
     return this;
   }
-  
+
   /**
    * Clear the list of document feature names to use for updating.
-   * 
+   *
    * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater noFeature() {
     featurenames = new HashSet<String>();
     return this;
   }
-  
+
   /**
    * Add feature name to include for updating.
-   * 
-   * @param name the name of the feature 
+   *
+   * @param name the name of the feature
    * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater useFeature(String name) {
     featurenames.add(name);
     return this;
   }
-  
+
   /**
-   * Specify how annotations with an id that already exists should be handled.Default is ADD_WITH_NEW_ID
-   * 
+   * Specify how annotations with an id that already exists should be
+   * handled.Default is ADD_WITH_NEW_ID
    *
-   * @param option The annotation handling option to use 
+   *
+   * @param option The annotation handling option to use
    * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater handleExistingAnnotation(HandleExistingAnns option) {
     handleAnns = option;
     return this;
   }
-  
-  private void addAnnotation(AnnotationSet gateset, 
-          int annid, int tdocstart, int tdocend, String tdoctype, 
+
+  private void addAnnotation(AnnotationSet gateset,
+          int annid, int tdocstart, int tdocend, String tdoctype,
           Map<String, Object> tdocfeatures) {
-      Annotation gateann = gateset.get(annid);
-      Map<String, Object> tmpmap = tdocfeatures == null ? 
-                new HashMap<>() :
-                tdocfeatures;
-      if(gateann == null || handleAnns == HandleExistingAnns.ADD_WITH_NEW_ID) {
-        try {
-          gateset.add(
-                (long)tdocstart, (long)tdocend, 
+    Annotation gateann = gateset.get(annid);
+    Map<String, Object> tmpmap = 
+            (tdocfeatures == null)
+            ? new HashMap<>()
+            : tdocfeatures;
+    if (gateann == null || handleAnns == HandleExistingAnns.ADD_WITH_NEW_ID) {
+      try {
+        gateset.add(
+                (long) tdocstart, (long) tdocend,
                 tdoctype, gate.Utils.toFeatureMap(tmpmap));
-        } catch(InvalidOffsetException ex) {
-          throw new RuntimeException("Cannot add annotation", ex);
-        }      
-      } else {
-        // an annotation with this id already exists, choose what to do
-        // first get the existing featuremap and map string feature names
-        // to the original keys. in theory this could yield duplicates but
-        // we do not care about this for now, those features really should all
-        // have string names! null keys are ignored
-        FeatureMap gatefm = gateann.getFeatures();
-        Map<String, Object> name2key = new HashMap<>();
-        for(Object key : gatefm.keySet()) {
-          if(key != null) {
-            name2key.put(
-                    (key instanceof String) ? 
-                            (String)key : key.toString(), key);
-          }          
-        }
-        // Subsequently, when we need to figure out if a feature is in the 
-        // featuremap, use the name2key mapping
-        switch(handleAnns) {
-          case ADD_NEW_FEATURES:
-            for(String fname : tdocfeatures.keySet()) {              
-              if(!(name2key.containsKey(fname) && gatefm.containsKey(name2key.get(fname)))) {
-                gatefm.put(fname, tdocfeatures.get(fname));
-              }
-            }
-            break;
-          // already gets handled above!
-          // case ADD_WITH_NEW_ID:            
-          //  break;
-          case REPLACE_ANNOTATION:
-            // I think there is no way to actually update need to remove and add with id
-            gateset.remove(gateann);
-            try {
-              gateset.add(annid, (long)tdocstart, (long)tdocend, 
-                  tdoctype, gate.Utils.toFeatureMap(tmpmap));
-            } catch(InvalidOffsetException ex) {
-              throw new RuntimeException("Cannot add annotation", ex);
-            }
-            break;
-          case REPLACE_FEATURES:
-            gatefm.clear();
-            for(String fname : tdocfeatures.keySet()) {              
-              gatefm.put(fname, tdocfeatures.get(fname));
-            }
-            break;
-          case UPDATE_FEATURES:
-            for(String fname : tdocfeatures.keySet()) {              
-              gatefm.put(fname, tdocfeatures.get(fname));
-            }
-            break;
-          case IGNORE:
-            break;
-          default:
-            throw new RuntimeException("Should never happen!");                    
+      } catch (InvalidOffsetException ex) {
+        throw new RuntimeException("Cannot add annotation", ex);
+      }
+    } else {
+      // an annotation with this id already exists, choose what to do
+      // first get the existing featuremap and map string feature names
+      // to the original keys. in theory this could yield duplicates but
+      // we do not care about this for now, those features really should all
+      // have string names! null keys are ignored
+      FeatureMap gatefm = gateann.getFeatures();
+      Map<String, Object> name2key = new HashMap<>();
+      for (Object key : gatefm.keySet()) {
+        if (key != null) {
+          name2key.put(
+                  (key instanceof String)
+                          ? (String) key : key.toString(), key);
         }
       }
-    
+      // Subsequently, when we need to figure out if a feature is in the 
+      // featuremap, use the name2key mapping
+      switch (handleAnns) {
+        case ADD_NEW_FEATURES:
+          for (String fname : tmpmap.keySet()) {
+            if (!(name2key.containsKey(fname) && gatefm.containsKey(name2key.get(fname)))) {
+              gatefm.put(fname, tmpmap.get(fname));
+            }
+          }
+          break;
+        // already gets handled above!
+        // case ADD_WITH_NEW_ID:            
+        //  break;
+        case REPLACE_ANNOTATION:
+          // I think there is no way to actually update need to remove and add with id
+          gateset.remove(gateann);
+          try {
+            gateset.add(annid, (long) tdocstart, (long) tdocend,
+                    tdoctype, gate.Utils.toFeatureMap(tmpmap));
+          } catch (InvalidOffsetException ex) {
+            throw new RuntimeException("Cannot add annotation", ex);
+          }
+          break;
+        case REPLACE_FEATURES:
+          gatefm.clear();
+          for (String fname : tmpmap.keySet()) {
+            gatefm.put(fname, tmpmap.get(fname));
+          }
+          break;
+        case UPDATE_FEATURES:
+          tmpmap.keySet().forEach((fname) -> {
+            gatefm.put(fname, tmpmap.get(fname));
+        });
+          break;
+
+        case IGNORE:
+          break;
+        default:
+          throw new RuntimeException("Should never happen!");
+      }
+    }
+
   }
-  
+
   private void addAnnotationSet(BdocAnnotationSet annset) {
     String setname = annset.name;
     AnnotationSet gateset;
-    if(setname.equals("")) {
-      gateset = doc.getAnnotations();
+    if (setname.equals("")) {
+      gateset = gateDocument.getAnnotations();
     } else {
-      gateset = doc.getAnnotations(setname);
+      gateset = gateDocument.getAnnotations(setname);
     }
-    for(BdocAnnotation tdocann : annset.annotations) {
-      addAnnotation(gateset, 
+    annset.annotations.forEach((tdocann) -> {
+      addAnnotation(gateset,
               tdocann.id, tdocann.start, tdocann.end, tdocann.type, tdocann.features);
-    }
+    });
   }
-  
+
   /**
    * Actually carry out the update of the GATE document from the TdocDocument.
-   * 
+   *
    * This carries out the update with whatever options have been set.
-   * 
+   *
    * @param tdoc the Tdoc to use for the updates
    */
   public void fromTdocDocument(BdocDocument tdoc) {
     // can only assign features if there are any in the tdoc
-    if(tdoc.features != null) {
-      if(featurenames == null) {
-        doc.getFeatures().putAll(tdoc.features);
+    if (tdoc.features != null) {
+      if (featurenames == null) {
+        gateDocument.getFeatures().putAll(tdoc.features);
       } else {
-        for(String fname : featurenames) {
-          doc.getFeatures().put(fname, tdoc.features.get(fname));
-        }
+        featurenames.forEach((fname) -> {
+          gateDocument.getFeatures().put(fname, tdoc.features.get(fname));
+        });
       }
     }
-    if(tdoc.annotation_sets != null) {
-      if(annsetnames == null) {
-        for(String annsetname : tdoc.annotation_sets.keySet()) {
+    if (tdoc.annotation_sets != null) {
+      if (annsetnames == null) {
+        tdoc.annotation_sets.keySet().forEach((annsetname) -> {
           addAnnotationSet(tdoc.annotation_sets.get(annsetname));
-        }
+        });
       } else {
-        for(String annsetname : annsetnames) {
+        annsetnames.forEach((annsetname) -> {
           addAnnotationSet(tdoc.annotation_sets.get(annsetname));
-        }
+        });
       }
     }
-    
+
   }
-  
+
   /**
    * Actually carry out the update of the GATE document from the TdocChangeLog.
-   * 
+   *
    * This carries out the update with whatever options have been set.
-   * 
+   *
    * @param log the changelog to use for the updates
    */
   public void fromTdocChangeLog(BdocChangeLog log) {
-    for(Map<String, Object> chg : log.changes) {
+    for (Map<String, Object> chg : log.changes) {
       // features:clear
       // feature:set, feature, value
       // feature:remove, feature
@@ -252,75 +275,81 @@ public class GateDocumentUpdater {
       // features:clear, set, id
       // feature:set, set, id, feature, value
       // feature:remove, set, id, feature
-      
       // annotation:add, set, start, end, type, features, id
       // annotation:remove, set, id
       // annotation:clear, set
-      String cmd = (String)chg.get("command");
-      String setname = (String)chg.get("set");
+      String cmd = (String) chg.get("command");
+      String setname = (String) chg.get("set");
       AnnotationSet annset = null;
-      if(setname != null) {
-        annset = 
-                    setname.equals("") ? 
-                    doc.getAnnotations() : 
-                    doc.getAnnotations(setname);        
+      if (setname != null) {
+        annset
+                = setname.equals("")
+                ? gateDocument.getAnnotations()
+                : gateDocument.getAnnotations(setname);
       }
-      Integer id = (Integer)chg.get("id");
-      String feature = (String)chg.get("feature");
+      Integer id = (Integer) chg.get("id");
+      String feature = (String) chg.get("feature");
       Object value = chg.get("value");
-      switch(cmd) {
-        case "features:clear":      
-          if(setname == null) {
-            doc.getFeatures().clear();
+      switch (cmd) {
+        case "features:clear":
+          if (setname == null) {
+            gateDocument.getFeatures().clear();
           } else {
-            if(setname.equals("")) {
-              doc.getAnnotations().clear();
+            if (setname.equals("")) {
+              gateDocument.getAnnotations().clear();
             } else {
-              doc.getAnnotations(setname).clear();
+              gateDocument.getAnnotations(setname).clear();
             }
           }
           break;
         case "feature:set":
-          if(setname == null) {
-            doc.getFeatures().put(feature, value);
+          if (setname == null) {
+            gateDocument.getFeatures().put(feature, value);
           } else {
-            Annotation ann = annset.get(id);
-            if(ann == null) {
-              throw new RuntimeException("Annotation does not exist with id "+id);
-            } else {
-              ann.getFeatures().put(feature, value);
+            if (annset != null) {
+              Annotation ann = annset.get(id);
+              if (ann == null) {
+                throw new RuntimeException("Annotation does not exist with id " + id);
+              } else {
+                ann.getFeatures().put(feature, value);
+              }
             }
           }
           break;
         case "feature:remove":
-          if(setname == null) {
-            doc.getFeatures().remove(feature);
+          if (setname == null) {
+            gateDocument.getFeatures().remove(feature);
           } else {
-            Annotation ann = annset.get(id);
-            if(ann == null) {
-              throw new RuntimeException("Annotation does not exist with id "+id);
-            } else {
-              ann.getFeatures().remove(feature);
+            if (annset != null) {
+              Annotation ann = annset.get(id);
+              if (ann == null) {
+                throw new RuntimeException("Annotation does not exist with id " + id);
+              } else {
+                ann.getFeatures().remove(feature);
+              }
             }
           }
           break;
         case "annotation:add":
-          int start = (Integer)chg.get("start");
-          int end = (Integer)chg.get("end");
-          String type = (String)chg.get("type");
-          Map<String, Object> features = (Map<String,Object>)chg.get("features");
+          int start = (Integer) chg.get("start");
+          int end = (Integer) chg.get("end");
+          String type = (String) chg.get("type");
+          Map<String, Object> features = (Map<String, Object>) chg.get("features");
           addAnnotation(annset, id, start, end, type, features);
           break;
         case "annotation:remove":
-          Annotation gateann = annset.get(id);
-          annset.remove(gateann);
+          if (annset != null) {
+            Annotation gateann = annset.get(id);
+            annset.remove(gateann);
+          }
           break;
         case "annotations:clear":
-          annset.clear();
+          if (annset != null) {
+            annset.clear();
+          }
           break;
       }
-              
-      
+
     }
   }
 }

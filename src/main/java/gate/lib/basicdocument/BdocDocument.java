@@ -1,5 +1,6 @@
 package gate.lib.basicdocument;
 
+import java.util.HashMap;
 import org.apache.log4j.Logger;
 import java.util.Map;
 
@@ -23,8 +24,11 @@ public class BdocDocument
    * Other than the feature map of a GATE document, only String keys are 
    * supported. Non strings in the original document get convert using toString()
    * If there are no features, this may be null.
+   * <p>
+   * NOTE: this is a HashMap rather than a Map so that jackson-jr does not 
+   * use its own DeferredMap on restoring.
    */
-  public Map<String, Object> features;
+  public HashMap<String, Object> features;
   
   /**
    * Document text.
@@ -34,8 +38,11 @@ public class BdocDocument
   
   /**
    * Map from annotation set name to annotation set with that name. 
+   * <p>
+   * NOTE: this is a HashMap rather than a Map so that jackson-jr does not 
+   * use its own DeferredMap on restoring.
    */
-  public Map<String, BdocAnnotationSet> annotation_sets;
+  public HashMap<String, BdocAnnotationSet> annotation_sets;
   
   /**
    * Indicates the style of offsets used in this document.

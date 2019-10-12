@@ -10,9 +10,14 @@ import java.util.Map;
 
 /**
  * Something that represents changes to a document.
+ * 
  * @author  Johann Petrak johann.petrak@gmail.com
  */
 public class BdocChangeLog {
+  
+  /**
+   * The list of changes.
+   */
   public List<Map<String, Object>> changes;
   // TODO!
 }
