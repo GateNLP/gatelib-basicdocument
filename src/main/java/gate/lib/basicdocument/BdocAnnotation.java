@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-class BdocAnnotation {
+public class BdocAnnotation {
   
   public static BdocAnnotation fromGateAnnotation(Annotation ann) {
     BdocAnnotation ret = new BdocAnnotation();

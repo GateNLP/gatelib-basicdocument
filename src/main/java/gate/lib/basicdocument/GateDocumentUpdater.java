@@ -17,7 +17,8 @@ import java.util.Set;
 
 /**
  * A class that allows to update a GATE document from a TextDocument
- * @author johann
+ * 
+ * @author Johann Petrak johann.petrak@gmail.com 
  */
 public class GateDocumentUpdater {
   /**
@@ -66,7 +67,7 @@ public class GateDocumentUpdater {
    * Initially, all annotation sets are added, this can be used to 
    * start giving an explicit list of annotation set names to use by 
    * subsequently calling useAnnotationSet(name)
-   * @return 
+   * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater noAnnotationSet() {
     annsetnames = new HashSet<String>();
@@ -75,8 +76,8 @@ public class GateDocumentUpdater {
   
   /**
    * Include this annotation set in the updates.
-   * @param name
-   * @return 
+   * @param name name of annotation set to include
+   * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater useAnnotationSet(String name) {
     annsetnames.add(name);
@@ -85,22 +86,31 @@ public class GateDocumentUpdater {
   
   /**
    * Clear the list of document feature names to use for updating.
-   * @return 
+   * 
+   * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater noFeature() {
     featurenames = new HashSet<String>();
     return this;
   }
   
+  /**
+   * Add feature name to include for updating.
+   * 
+   * @param name the name of the feature 
+   * @return modified GateDocumentUpdater
+   */
   public GateDocumentUpdater useFeature(String name) {
     featurenames.add(name);
     return this;
   }
   
   /**
-   * Specify how annotations with an id that already exists should be handled.
-   * Default is ADD_WITH_NEW_ID
-   * @return 
+   * Specify how annotations with an id that already exists should be handled.Default is ADD_WITH_NEW_ID
+   * 
+   *
+   * @param option The annotation handling option to use 
+   * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater handleExistingAnnotation(HandleExistingAnns option) {
     handleAnns = option;

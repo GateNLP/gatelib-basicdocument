@@ -65,7 +65,7 @@ public class BdocDocument
     // go through all annotation sets and all annotations and fix them
     for(BdocAnnotationSet annset : annotation_sets.values()) {
       for(BdocAnnotation ann : annset.annotations) {
-        if(newtype == "p") {
+        if("p".equals(newtype)) {
           ann.start = om.convertToPython(ann.start);
           ann.end = om.convertToPython(ann.end);
         } else {
@@ -74,8 +74,8 @@ public class BdocDocument
         }
       }
     }
+    offset_type = newtype;
   }
-  
   
   
 }
