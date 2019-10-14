@@ -13,7 +13,7 @@ import java.util.Map;
  * 
  * @author  Johann Petrak johann.petrak@gmail.com
  */
-public class BdocChangeLog {
+public class ChangeLog {
   
   /**
    * The list of changes.

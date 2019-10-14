@@ -266,7 +266,7 @@ public class GateDocumentUpdater {
    *
    * @param log the changelog to use for the updates
    */
-  public void fromTdocChangeLog(BdocChangeLog log) {
+  public void fromTdocChangeLog(ChangeLog log) {
     for (Map<String, Object> chg : log.changes) {
       // features:clear
       // feature:set, feature, value
