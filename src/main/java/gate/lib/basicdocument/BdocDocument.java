@@ -1,8 +1,9 @@
 package gate.lib.basicdocument;
 
+import gate.Document;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
-import java.util.Map;
+
 
 /**
  * A very basic representation of all the components of a GATE document.
@@ -84,5 +85,16 @@ public class BdocDocument
     offset_type = newtype;
   }
   
+  /**
+   * Convert this BdocDocument instance to a GATE document. 
+   * 
+   * This will include all the parts present in the BdocDocument.
+   * 
+   * @return a new GATE document containing everything in the BdocDocument 
+   * instance.
+   */
+  public Document toGateDocument() {
+    return new GateDocumentUpdater(this.text).fromBdoc(this);
+  }
   
 }

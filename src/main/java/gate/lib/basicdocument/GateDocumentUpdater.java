@@ -1,19 +1,25 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package gate.lib.basicdocument;
 
 import gate.Annotation;
 import gate.AnnotationSet;
 import gate.Document;
+import gate.Factory;
 import gate.FeatureMap;
+import gate.creole.ResourceInstantiationException;
+import gate.util.GateRuntimeException;
 import gate.util.InvalidOffsetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+// TODO: use offset mapper when copying over the annotations from Tdoc/changelog
+//   in case those offsets are type python
+
+
 
 /**
  * A class that allows to update a GATE document from a TextDocument
@@ -64,6 +70,15 @@ public class GateDocumentUpdater {
    * If null, use all, otherwise the set of document feature names to use.
    */
   private Set<String> featurenames;
+  
+  /**
+   * OffsetMapper for converting offsets to Java.
+   * If we update from a BdocDocument of ChangeLog which does not have Java
+   * offsets, we first create the offset mapper and store it here before any
+   * annotations get copied. The offset mapper is only built whenever the 
+   * first annotation actually needs to get converted.
+   */
+  private OffsetMapper offsetMapper = null;
 
   /**
    * Create a document updater with the default options. Initially, all
@@ -76,6 +91,23 @@ public class GateDocumentUpdater {
   public GateDocumentUpdater(Document doc) {
     this.gateDocument = doc;
 
+  }
+  
+  /**
+   * Create a document updated for updating a brand new document with this text.
+   * 
+   * This can be used to convert a BdocDocument to a GATE document and still
+   * control, if necessary, which annotations/features of the BdocDocument
+   * should get converted. 
+   * 
+   * @param text 
+   */
+  public GateDocumentUpdater(String text) {
+    try {
+      this.gateDocument = Factory.newDocument(text);
+    } catch (ResourceInstantiationException ex) {
+      throw new GateRuntimeException("Could not create GATE document from the given text", ex);
+    }
   }
 
   // Methods to set options about how to update the document
@@ -140,7 +172,7 @@ public class GateDocumentUpdater {
 
   private void addAnnotation(AnnotationSet gateset,
           int annid, int tdocstart, int tdocend, String tdoctype,
-          Map<String, Object> tdocfeatures) {
+          Map<String, Object> tdocfeatures, String offsetType) {
     Annotation gateann = gateset.get(annid);
     Map<String, Object> tmpmap = 
             (tdocfeatures == null)
@@ -213,7 +245,7 @@ public class GateDocumentUpdater {
 
   }
 
-  private void addAnnotationSet(BdocAnnotationSet annset) {
+  private void addAnnotationSet(BdocAnnotationSet annset, String offsetType) {
     String setname = annset.name;
     AnnotationSet gateset;
     if (setname.equals("")) {
@@ -223,51 +255,52 @@ public class GateDocumentUpdater {
     }
     annset.annotations.forEach((tdocann) -> {
       addAnnotation(gateset,
-              tdocann.id, tdocann.start, tdocann.end, tdocann.type, tdocann.features);
+              tdocann.id, tdocann.start, tdocann.end, tdocann.type,
+              tdocann.features, offsetType);
     });
   }
 
   /**
-   * Actually carry out the update of the GATE document from the TdocDocument.
+   * Actually carry out the update of the GATE document from the TdocDocument.This carries out the update with whatever options have been set.
    *
-   * This carries out the update with whatever options have been set.
    *
-   * @param tdoc the Tdoc to use for the updates
+   * @param bdoc the Tdoc to use for the updates
+   * @return the updated GATE document
    */
-  public void fromTdocDocument(BdocDocument tdoc) {
-    // can only assign features if there are any in the tdoc
-    if (tdoc.features != null) {
+  public Document fromBdoc(BdocDocument bdoc) {
+    // can only assign features if there are any in the bdoc
+    if (bdoc.features != null) {
       if (featurenames == null) {
-        gateDocument.getFeatures().putAll(tdoc.features);
+        gateDocument.getFeatures().putAll(bdoc.features);
       } else {
         featurenames.forEach((fname) -> {
-          gateDocument.getFeatures().put(fname, tdoc.features.get(fname));
+          gateDocument.getFeatures().put(fname, bdoc.features.get(fname));
         });
       }
     }
-    if (tdoc.annotation_sets != null) {
+    if (bdoc.annotation_sets != null) {
       if (annsetnames == null) {
-        tdoc.annotation_sets.keySet().forEach((annsetname) -> {
-          addAnnotationSet(tdoc.annotation_sets.get(annsetname));
+        bdoc.annotation_sets.keySet().forEach((annsetname) -> {
+          addAnnotationSet(bdoc.annotation_sets.get(annsetname), bdoc.offset_type);
         });
       } else {
         annsetnames.forEach((annsetname) -> {
-          addAnnotationSet(tdoc.annotation_sets.get(annsetname));
+          addAnnotationSet(bdoc.annotation_sets.get(annsetname), bdoc.offset_type);
         });
       }
     }
-
+    return gateDocument;
   }
 
   /**
-   * Actually carry out the update of the GATE document from the TdocChangeLog.
+   * Actually carry out the update of the GATE document from the TdocChangeLog.This carries out the update with whatever options have been set.
    *
-   * This carries out the update with whatever options have been set.
    *
-   * @param log the changelog to use for the updates
+   * @param chlog the changelog to use for the updates
+   * @return returns the updated GATE document 
    */
-  public void fromTdocChangeLog(ChangeLog log) {
-    for (Map<String, Object> chg : log.changes) {
+  public Document fromChangeLog(ChangeLog chlog) {
+    for (Map<String, Object> chg : chlog.changes) {
       // features:clear
       // feature:set, feature, value
       // feature:remove, feature
@@ -335,7 +368,7 @@ public class GateDocumentUpdater {
           int end = (Integer) chg.get("end");
           String type = (String) chg.get("type");
           Map<String, Object> features = (Map<String, Object>) chg.get("features");
-          addAnnotation(annset, id, start, end, type, features);
+          addAnnotation(annset, id, start, end, type, features, chlog.offset_type);
           break;
         case "annotation:remove":
           if (annset != null) {
@@ -351,5 +384,6 @@ public class GateDocumentUpdater {
       }
 
     }
+    return gateDocument;
   }
 }

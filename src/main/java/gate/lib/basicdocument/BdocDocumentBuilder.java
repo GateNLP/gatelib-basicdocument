@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gate.lib.basicdocument;
 
 import com.fasterxml.jackson.jr.ob.JSON;
@@ -219,16 +214,13 @@ public class BdocDocumentBuilder {
    */
   public BdocDocument buildBdoc() {
     BdocDocument ret = new BdocDocument();
-    System.err.println("DEBUG: text="+text);
     ret.text = text;
     if(includedFeatures.size() > 0) {
-      System.err.println("DEBUG: feature="+includedFeatures);
       ret.features = includedFeatures;
     }
     if(includedSets.size() > 0) {
       HashMap<String, BdocAnnotationSet> annotation_sets = new HashMap<>();
       for(String name : includedSets.keySet()) {     
-        System.err.println("DEBUG: included set="+name+" set="+includedSets.get(name));
         BdocAnnotationSet annset = new BdocAnnotationSet();
         annset.name = name;
         annset.annotations = new ArrayList<BdocAnnotation>();
@@ -246,7 +238,6 @@ public class BdocDocumentBuilder {
       ret.annotation_sets = annotation_sets;
     }
     // do any offset fixup, if necessary
-    System.err.println("DEBUG: fixup="+offset_type);
 
     ret.fixupOffsets(offset_type);
     return ret;
