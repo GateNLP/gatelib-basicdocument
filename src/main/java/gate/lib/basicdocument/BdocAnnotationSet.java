@@ -1,4 +1,4 @@
-package gate.lib.textdocument;
+package gate.lib.basicdocument;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class TdocAnnotationSet {
+public class BdocAnnotationSet {
   
   // Fields representing the various aspects of an annotation set
   
@@ -19,7 +19,10 @@ public class TdocAnnotationSet {
    */
   public String name; 
   
-  public List<TdocAnnotation> annotations;
+  /**
+   * The list of annotations in this set.
+   */
+  public List<BdocAnnotation> annotations;
   
   // For partial annotation sets, contains the id to use for new
   // annotations. 

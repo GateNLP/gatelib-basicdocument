@@ -1,12 +1,15 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <groupId>uk.ac.gate</groupId>
-  <artifactId>jsondocument</artifactId>
+  <groupId>uk.ac.gate.libraries</groupId>
+  <artifactId>basicdocument</artifactId>
   <version>0.1-SNAPSHOT</version>
-  <name>gatelib-jsondocument</name>
+  <name>gatelib-basicdocument</name>
   <description>
-    A library to help with serialising and de-serialising GATE documents as JSON and 
-    manipulate intermediate full, partial or incremental documents. 
+    A library to help with converting GATE documents to and from a basic representation that 
+    can be easily de-/serialised to/from JSON and other formats and which corresponds closely to
+    the representation used in the Python gatenlp package. 
+    Also supports the updating of GATE documents with information from either a basicdocument or 
+    a changelog created with the Python gatenlp module. 
   </description>
   <developers>
     <developer>
@@ -23,9 +26,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/GateNLP/gatelib-jsondocument.git</connection>
-    <developerConnection>scm:git:git@github.com:GateNLP/gatelib-jsondocument.git</developerConnection>
-    <url>https://github.com/GateNLP/gatelib-jsondocument</url>
+    <connection>scm:git:https://github.com/GateNLP/gatelib-basicdocument.git</connection>
+    <developerConnection>scm:git:git@github.com:GateNLP/gatelib-basicdocument.git</developerConnection>
+    <url>https://github.com/GateNLP/gatelib-basicdocument</url>
   </scm>
   <licenses>
     <license>
@@ -34,7 +37,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <url>https://github.com/GateNLP/gatelib-jsondocument</url>
+  <url>https://github.com/GateNLP/gatelib-basicdocument</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -149,7 +152,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jr</groupId>
       <artifactId>jackson-jr-objects</artifactId>
-      <version>2.9.0</version>
+      <version>2.10.0</version>
     </dependency>    
     <dependency>
       <groupId>commons-io</groupId>
