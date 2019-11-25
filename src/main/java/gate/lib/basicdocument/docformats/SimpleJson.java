@@ -214,7 +214,7 @@ public class SimpleJson {
   
   /**
    * Load JSON changelog representation from reader
-   * @param instream open reader
+   * @param reader open reader
    * @return changelog instance
    */
   public ChangeLog load_log(Reader reader) {
@@ -228,7 +228,7 @@ public class SimpleJson {
   
   /**
    * Load JSON changelog representation from string
-   * @param instream string
+   * @param json string
    * @return changelog instance
    */
   public ChangeLog loads_log(String json) {
