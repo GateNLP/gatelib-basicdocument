@@ -367,6 +367,7 @@ public class GateDocumentUpdater {
           int start = (Integer) chg.get("start");
           int end = (Integer) chg.get("end");
           String type = (String) chg.get("type");
+          @SuppressWarnings("unchecked")
           Map<String, Object> features = (Map<String, Object>) chg.get("features");
           addAnnotation(annset, id, start, end, type, features, chlog.offset_type);
           break;

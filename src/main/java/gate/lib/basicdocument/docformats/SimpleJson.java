@@ -154,7 +154,11 @@ public class SimpleJson {
   // 2) Load: it seems this works properly out of the box, no need for custom readers
   
   // 2.1) BdocDocument
-  
+  /**
+   * Load JSON from stream
+   * @param instream open stream to load from
+   * @return bdoc document instance
+   */
   public BdocDocument load_doc(InputStream instream) {
     JSON jsonbuilder = JSON.std;
     try {
@@ -164,6 +168,11 @@ public class SimpleJson {
     }
   }
   
+  /**
+   * Load JSON from reader
+   * @param reader the open reader to load from
+   * @return bdoc document instance
+   */
   public BdocDocument load_doc(Reader reader) {
     JSON jsonbuilder = JSON.std;
     try {
@@ -173,6 +182,11 @@ public class SimpleJson {
     }
   }
   
+  /**
+   * Load JSON from String
+   * @param json json string
+   * @return bdoc document instance
+   */
   public BdocDocument loads_doc(String json) {
     JSON jsonbuilder = JSON.std;
     try {
@@ -184,6 +198,11 @@ public class SimpleJson {
 
   // 2.1) BdocDocument
   
+  /**
+   * Load JSON changelog representation from stream
+   * @param instream open stream
+   * @return changelog instance
+   */
   public ChangeLog load_log(InputStream instream) {
     JSON jsonbuilder = JSON.std;
     try {
@@ -193,6 +212,11 @@ public class SimpleJson {
     }
   }
   
+  /**
+   * Load JSON changelog representation from reader
+   * @param instream open reader
+   * @return changelog instance
+   */
   public ChangeLog load_log(Reader reader) {
     JSON jsonbuilder = JSON.std;
     try {
@@ -202,6 +226,11 @@ public class SimpleJson {
     }
   }
   
+  /**
+   * Load JSON changelog representation from string
+   * @param instream string
+   * @return changelog instance
+   */
   public ChangeLog loads_log(String json) {
     JSON jsonbuilder = JSON.std;
     try {
