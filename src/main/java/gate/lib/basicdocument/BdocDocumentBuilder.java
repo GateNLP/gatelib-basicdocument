@@ -34,9 +34,6 @@ public class BdocDocumentBuilder {
   String offset_type = "j";
   List<JSON.Feature> addJSONFeatures = new ArrayList<>();
 
-  public BdocDocumentBuilder() {
-  }
-
   /**
    * Tell the builder to create the JsonDocument from a GATE document.
    * By default, this will include all features and all annotation sets,
@@ -198,7 +195,11 @@ public class BdocDocumentBuilder {
     return this;
   }
   
-  
+  /**
+   * Set a JSON serialisation feature.
+   * @param feature the feature to set
+   * @return the modified builder instance
+   */
   public BdocDocumentBuilder withJSONFeature(JSON.Feature feature) {
     addJSONFeatures.add(feature);
     return this;

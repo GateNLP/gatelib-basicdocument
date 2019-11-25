@@ -10,6 +10,11 @@ import java.util.Map;
  */
 public class BdocAnnotation {
   
+  /**
+   * Create from a GATE annotation.
+   * @param ann GATE annotation
+   * @return BdocAnnotation
+   */
   public static BdocAnnotation fromGateAnnotation(Annotation ann) {
     BdocAnnotation ret = new BdocAnnotation();
     ret.type = ann.getType();
@@ -21,8 +26,14 @@ public class BdocAnnotation {
   }
   
   // Fields
+  /**
+   * BdocAnnotation features
+   */
   public Map<String, Object> features;
   
+  /**
+   * BdocAnnotation type
+   */
   public String type; 
 
   /**

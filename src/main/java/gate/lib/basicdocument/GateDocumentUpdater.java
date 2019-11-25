@@ -94,13 +94,13 @@ public class GateDocumentUpdater {
   }
   
   /**
-   * Create a document updated for updating a brand new document with this text.
+   * Create a document updater for updating a brand new document with this text.
    * 
    * This can be used to convert a BdocDocument to a GATE document and still
    * control, if necessary, which annotations/features of the BdocDocument
    * should get converted. 
    * 
-   * @param text 
+   * @param text initial text to start building the document from
    */
   public GateDocumentUpdater(String text) {
     try {
