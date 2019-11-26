@@ -261,10 +261,11 @@ public class GateDocumentUpdater {
   }
 
   /**
-   * Actually carry out the update of the GATE document from the TdocDocument.This carries out the update with whatever options have been set.
+   * Actually carry out the update of the GATE document from the BdocDocument.
+   * This carries out the update with whatever options have been set.
    *
    *
-   * @param bdoc the Tdoc to use for the updates
+   * @param bdoc the bdoc to use for the updates
    * @return the updated GATE document
    */
   public Document fromBdoc(BdocDocument bdoc) {
