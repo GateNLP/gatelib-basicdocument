@@ -34,7 +34,7 @@ public class BdocAnnotation {
   /**
    * BdocAnnotation type
    */
-  public String type = "";
+  public String type;
 
   /**
    * The annotation id. 
