@@ -42,5 +42,10 @@ class TdocAnnotation {
    */
   public int end;
   
+  /**
+   * Type identifier.
+   */
+  public String gatenlp_type = "Annotation";
+  
   
 }

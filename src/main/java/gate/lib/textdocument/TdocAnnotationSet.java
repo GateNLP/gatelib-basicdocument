@@ -24,5 +24,10 @@ public class TdocAnnotationSet {
   // For partial annotation sets, contains the id to use for new
   // annotations. 
   public Integer max_annid; 
+
+  /**
+   * Type identifier.
+   */
+  public String gatenlp_type = "AnnotationSet";
   
 }

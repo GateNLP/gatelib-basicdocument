@@ -77,5 +77,10 @@ public class TdocDocument
     }
   }
   
+  /**
+   * Type identifier.
+   */
+  public String gatenlp_type = "Document";
+  
   
 }

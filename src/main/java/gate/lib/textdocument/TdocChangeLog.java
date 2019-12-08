@@ -15,4 +15,10 @@ import java.util.Map;
 public class TdocChangeLog {
   public List<Map<String, Object>> changes;
   // TODO!
+  /**
+   * Type identifier.
+   */
+  public String gatenlp_type = "ChangeLog";
 }
+
+
