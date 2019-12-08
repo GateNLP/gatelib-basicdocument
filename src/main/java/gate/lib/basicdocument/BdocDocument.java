@@ -1,42 +1,49 @@
-package gate.lib.textdocument;
+package gate.lib.basicdocument;
 
+import gate.Document;
+import java.util.HashMap;
 import org.apache.log4j.Logger;
-import java.util.Map;
+
 
 /**
- * Representation of a document as we convert it to JSON and back. 
+ * A very basic representation of all the components of a GATE document.
+ * 
+ * This is a very basic POJO representation of a GATE document and 
+ * this representation also corresponds to the external JSON representation
+ * of GATE documents in Python. 
  * 
  * @author Johann Petrak johann.petrak@gmail.com
  */
-public class TdocDocument
+public class BdocDocument
 {
 
   private static final Logger LOGGER = 
-          Logger.getLogger(TdocDocument.class.getName());
+          Logger.getLogger(BdocDocument.class.getName());
 
-  // Fields used to represent the various parts of documents
-  // NOTE: the value null for each of these fields gets interpreted depending
-  // on the USE of the JsonDocument: if it is used as a full document, the 
-  // corresponding "empty" values are used (e.g. an empty string for the 
-  // document text). If used for updating etc. null values are ignored
-  // 
-  
   /**
    * Document features. 
    * Other than the feature map of a GATE document, only String keys are 
    * supported. Non strings in the original document get convert using toString()
+   * If there are no features, this may be null.
+   * <p>
+   * NOTE: this is a HashMap rather than a Map so that jackson-jr does not 
+   * use its own DeferredMap on restoring.
    */
-  public Map<String, Object> features;
+  public HashMap<String, Object> features;
   
   /**
    * Document text.
+   * 
    */
   public String text;
   
   /**
    * Map from annotation set name to annotation set with that name. 
+   * <p>
+   * NOTE: this is a HashMap rather than a Map so that jackson-jr does not 
+   * use its own DeferredMap on restoring.
    */
-  public Map<String, TdocAnnotationSet> annotation_sets;
+  public HashMap<String, BdocAnnotationSet> annotation_sets;
   
   /**
    * Indicates the style of offsets used in this document.
@@ -64,9 +71,9 @@ public class TdocDocument
     // create the offset mapper
     OffsetMapper om = new OffsetMapper(this.text);
     // go through all annotation sets and all annotations and fix them
-    for(TdocAnnotationSet annset : annotation_sets.values()) {
-      for(TdocAnnotation ann : annset.annotations) {
-        if(newtype == "p") {
+    for(BdocAnnotationSet annset : annotation_sets.values()) {
+      for(BdocAnnotation ann : annset.annotations) {
+        if("p".equals(newtype)) {
           ann.start = om.convertToPython(ann.start);
           ann.end = om.convertToPython(ann.end);
         } else {
@@ -75,12 +82,24 @@ public class TdocDocument
         }
       }
     }
+    offset_type = newtype;
   }
   
   /**
    * Type identifier.
    */
   public String gatenlp_type = "Document";
-  
+
+  /**
+   * Convert this BdocDocument instance to a GATE document. 
+   * 
+   * This will include all the parts present in the BdocDocument.
+   * 
+   * @return a new GATE document containing everything in the BdocDocument 
+   * instance.
+   */
+  public Document toGateDocument() {
+    return new GateDocumentUpdater(this.text).fromBdoc(this);
+  }
   
 }

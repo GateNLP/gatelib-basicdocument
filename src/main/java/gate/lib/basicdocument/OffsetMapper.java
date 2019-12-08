@@ -1,9 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package gate.lib.textdocument;
+
+package gate.lib.basicdocument;
 
 import gate.util.GateRuntimeException;
 import java.util.ArrayList;
@@ -54,10 +50,22 @@ public class OffsetMapper {
             java2python_list.parallelStream().
                     mapToInt(Integer::intValue).toArray();
   }
+  
+  /**
+   * Create the offset mappings for the given string and cache them. 
+   * 
+   * @param string the string to use
+   */
   public OffsetMapper(String string) {
     cache(string);
   }
   
+  /**
+   * Convert the offset from Java to Python.
+   * 
+   * @param offset java offset
+   * @return  python offset
+   */
   public int convertToPython(int offset) {
     if(offset >= 0 && offset < java2python.length) {
       return java2python[offset];
@@ -66,6 +74,12 @@ public class OffsetMapper {
     }
   }
 
+  /**
+   * Convert the offset from Python to Java.
+   * 
+   * @param offset the python offset
+   * @return java offset
+   */
   public int convertToJava(int offset) {
     if(offset >= 0 && offset < python2java.length) {
       return python2java[offset];
