@@ -8,6 +8,7 @@
     A library to help with converting GATE documents to and from a basic representation that 
     can be easily de-/serialised to/from JSON and other formats and which corresponds closely to
     the representation used in the Python gatenlp package. 
+
     Also supports the updating of GATE documents with information from either a basicdocument 
     or a changelog created with the Python gatenlp module. 
   </description>
