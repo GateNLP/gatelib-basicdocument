@@ -46,7 +46,7 @@ import java.util.Set;
 public class GateDocumentUpdater {
 
   /**
-   * What to do if an annotation to add already exists in the gate gateDocument
+   * What to do when adding an annotation that already exists in the document.
    */
   public enum HandleExistingAnns {
     /**
@@ -75,6 +75,9 @@ public class GateDocumentUpdater {
     ADD_WITH_NEW_ID,  // add that annotation with a new id
   }
   
+  /**
+   * What to do when adding a new annotation.
+   */
   public enum HandleNewAnns {
     /**
      * Add as a new annotation with a new id.
