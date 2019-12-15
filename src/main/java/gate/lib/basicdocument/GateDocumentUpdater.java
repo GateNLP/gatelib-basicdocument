@@ -32,8 +32,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 // TODO: use offset mapper when copying over the annotations from Tdoc/changelog
 //   in case those offsets are type python
@@ -76,9 +74,22 @@ public class GateDocumentUpdater {
      */
     ADD_WITH_NEW_ID,  // add that annotation with a new id
   }
+  
+  public enum HandleNewAnns {
+    /**
+     * Add as a new annotation with a new id.
+     */
+    ADD_WITH_NEW_ID,  // add that annotation with a new id
+    /**
+     * Add as a new annotation with a new id.
+     */
+    ADD_WITH_BDOC_ID,  // add that annotation with the id we get from the BDOC    
+  }
+  
   private Document gateDocument;
 
-  private HandleExistingAnns handleAnns = HandleExistingAnns.ADD_WITH_NEW_ID;
+  private HandleExistingAnns handleExistingAnns = HandleExistingAnns.ADD_WITH_NEW_ID;
+  private HandleNewAnns handleNewAnns = HandleNewAnns.ADD_WITH_NEW_ID;
 
   /**
    * If null, use all, otherwise the set of annotation set names to use.
@@ -185,9 +196,25 @@ public class GateDocumentUpdater {
    * @return modified GateDocumentUpdater
    */
   public GateDocumentUpdater handleExistingAnnotation(HandleExistingAnns option) {
-    handleAnns = option;
+    handleExistingAnns = option;
     return this;
   }
+  
+  /**
+   * Specify how new annotations should be
+   * handled.Default is ADD_WITH_NEW_ID.
+   *
+   * For restoring a document exactly as it was from a BDOC representation,
+   * ADD_WITH_BDOC_ID is necessary!
+   * 
+   * @param option The annotation handling option to use
+   * @return modified GateDocumentUpdater
+   */
+  public GateDocumentUpdater handleNewAnnotation(HandleNewAnns option) {
+    handleNewAnns = option;
+    return this;
+  }
+  
 
   private void addAnnotation(AnnotationSet gateset,
           int annid, int tdocstart, int tdocend, String tdoctype,
@@ -197,7 +224,16 @@ public class GateDocumentUpdater {
             (tdocfeatures == null)
             ? new HashMap<>()
             : tdocfeatures;
-    if (gateann == null || handleAnns == HandleExistingAnns.ADD_WITH_NEW_ID) {
+    if (gateann == null && handleNewAnns == HandleNewAnns.ADD_WITH_BDOC_ID) {
+      try {
+        gateset.add(
+                annid,
+                (long) tdocstart, (long) tdocend,
+                tdoctype, gate.Utils.toFeatureMap(tmpmap));
+      } catch (InvalidOffsetException ex) {
+        throw new RuntimeException("Cannot add annotation", ex);
+      }      
+    } else if (gateann == null || handleExistingAnns == HandleExistingAnns.ADD_WITH_NEW_ID) {
       try {
         gateset.add(
                 (long) tdocstart, (long) tdocend,
@@ -222,7 +258,7 @@ public class GateDocumentUpdater {
       }
       // Subsequently, when we need to figure out if a feature is in the 
       // featuremap, use the name2key mapping
-      switch (handleAnns) {
+      switch (handleExistingAnns) {
         case ADD_NEW_FEATURES:
           for (String fname : tmpmap.keySet()) {
             if (!(name2key.containsKey(fname) && gatefm.containsKey(name2key.get(fname)))) {
