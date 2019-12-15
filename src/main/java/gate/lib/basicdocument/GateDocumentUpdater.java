@@ -92,7 +92,7 @@ public class GateDocumentUpdater {
   private Document gateDocument;
 
   private HandleExistingAnns handleExistingAnns = HandleExistingAnns.ADD_WITH_NEW_ID;
-  private HandleNewAnns handleNewAnns = HandleNewAnns.ADD_WITH_NEW_ID;
+  private HandleNewAnns handleNewAnns = HandleNewAnns.ADD_WITH_BDOC_ID;
 
   /**
    * If null, use all, otherwise the set of annotation set names to use.
