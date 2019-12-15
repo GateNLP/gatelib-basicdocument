@@ -227,7 +227,7 @@ public class GateDocumentUpdater {
             (tdocfeatures == null)
             ? new HashMap<>()
             : tdocfeatures;
-    if (gateann == null && handleNewAnns == HandleNewAnns.ADD_WITH_BDOC_ID) {
+    if (gateann == null && handleNewAnns == HandleNewAnns.ADD_WITH_NEW_ID) {
       try {
         gateset.add(
                 annid,
