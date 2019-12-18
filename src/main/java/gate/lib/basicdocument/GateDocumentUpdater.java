@@ -326,7 +326,7 @@ public class GateDocumentUpdater {
           // I think there is no way to actually update need to remove and add with id
           gateset.remove(gateann);
           try {
-            gateset.add(bdocannid, (long) startoffset, (long) endoffset,
+            gateset.add(bdocannid, startoffset, endoffset,
                     bdoctype, gate.Utils.toFeatureMap(bdoc_fm));
           } catch (InvalidOffsetException ex) {
             throw new RuntimeException("Cannot add annotation", ex);
