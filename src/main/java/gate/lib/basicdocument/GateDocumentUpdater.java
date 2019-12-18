@@ -48,7 +48,7 @@ public class GateDocumentUpdater {
   /**
    * What to do when adding an annotation that already exists in the document.
    */
-  public enum HandleExistingAnns {
+  public static enum HandleExistingAnns {
     /**
      * Completely replace the annotation with the new one.
      */
@@ -78,7 +78,7 @@ public class GateDocumentUpdater {
   /**
    * What to do when adding a new annotation.
    */
-  public enum HandleNewAnns {
+  public static enum HandleNewAnns {
     /**
      * Add as a new annotation with a new id.
      */
