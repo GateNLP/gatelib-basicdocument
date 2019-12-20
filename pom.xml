@@ -117,6 +117,7 @@
             <phase>test</phase>
             <configuration>
               <skip>false</skip>
+              <forkCount>0</forkCount>
               <excludes>
                 <exclude>**/integration/*.java</exclude>
               </excludes>
@@ -130,6 +131,7 @@
             <phase>integration-test</phase>
             <configuration>
               <skip>false</skip>
+              <forkCount>0</forkCount>
               <excludes>
                 <exclude>none</exclude>
               </excludes>
