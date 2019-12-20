@@ -90,7 +90,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.1</version>
+        <version>0.8.5</version>
         <executions>
           <execution>
             <id>default-prepare-agent</id>
@@ -121,61 +121,6 @@
             <arg>-Xdoclint:all/public</arg>
           </compilerArgs>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.1</version>
-        <executions>
-          <execution>
-            <id>before-integration-tests</id>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <phase>integration-test</phase>
-            <configuration>
-          </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.0</version>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-        <executions>
-          <execution>
-            <id>unit-tests</id>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <phase>test</phase>
-            <configuration>
-              <skip>false</skip>
-              <excludes>
-                <exclude>**/integration/*.java</exclude>
-              </excludes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>integration-tests</id>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <phase>integration-test</phase>
-            <configuration>
-              <skip>false</skip>
-              <excludes>
-                <exclude>none</exclude>
-              </excludes>
-              <includes>
-                <include>**/integration/*.java</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
@@ -213,7 +158,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.1</version>
+        <version>0.8.5</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
