@@ -130,7 +130,7 @@ public class TestBasicDocument1 extends TestCase {
   public void testOffsetMappings1() throws ResourceInstantiationException, InvalidOffsetException {
     Document doc = Factory.newDocument(sampleText2);
     AnnotationSet defSet = doc.getAnnotations();
-    System.err.println("DEBUG: text len="+sampleText2.length());
+    // System.err.println("DEBUG: text len="+sampleText2.length());
     OffsetMapper om = new OffsetMapper(sampleText2);
     List<Integer> p2j = om.getPython2JavaList();
     List<Integer> j2p = om.getJava2PythonList();

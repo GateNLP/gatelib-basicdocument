@@ -67,8 +67,8 @@ public class OffsetMapper {
     // For this we add the previous offset plus one to the end of both lists
     java2python_list.add(java2python_list.get(java2python_list.size()-1)+1);
     python2java_list.add(python2java_list.get(python2java_list.size()-1)+1);
-    System.err.println("DEBUG: j2p:"+java2python_list+" / len="+java2python_list.size());
-    System.err.println("DEBUG: p2j:"+python2java_list+" / len="+python2java_list.size());
+    // System.err.println("DEBUG: j2p:"+java2python_list+" / len="+java2python_list.size());
+    // System.err.println("DEBUG: p2j:"+python2java_list+" / len="+python2java_list.size());
     java2python = 
             java2python_list.parallelStream().
                     mapToInt(Integer::intValue).toArray();
