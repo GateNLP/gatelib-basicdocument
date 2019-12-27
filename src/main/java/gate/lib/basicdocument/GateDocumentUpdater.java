@@ -492,6 +492,15 @@ public class GateDocumentUpdater {
             annset.clear();
           }
           break;
+        case "annotations:remove":
+          if (setname != null) {
+            if (setname.isEmpty() && annset != null) {
+              annset.clear();
+            } else {
+              gateDocument.removeAnnotationSet(setname);
+            }
+          }
+          break;
       }
 
     }
