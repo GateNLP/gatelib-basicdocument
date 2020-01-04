@@ -48,6 +48,7 @@ public class BdocDocumentBuilder {
   
   String text;
   HashMap<String,Set<Annotation>> includedSets = new HashMap<>();
+  HashMap<String,Integer> nextAnnotationIds = new HashMap<>();
   HashMap<String, Object> includedFeatures = new HashMap<>();
   File toFile = null;
   String offset_type = "j";
@@ -76,24 +77,27 @@ public class BdocDocumentBuilder {
   
   /**
    * Add an annotation set. 
-   * This does not check that the set comes from the same document as other
-   * sets or the text, if added, it is up to the user to make sure that 
-   * whatever is added here makes sense. 
-   * 
-   * Note: if a set with the same name is added more than once, the last 
-   * addition is used.
+   * Same as addSet(name, annset) but the annotation set uses the given
+   * nextAnnotationId for new annotations.
+   * NOTE: if the maximum annotation id in the set is bigger than the 
+   * given nextAnnotationId, then the bigger Id is used instead!
    * 
    * @param name the name of the annotation set (this can differ from the 
    * original name if an annotation set is passed. Must not be null, the 
    * "default" set uses the empty string as name. 
    * @param annset a set of annotations, could be an AnnotationSet or a set
    * of annotations.
+   * "param nextAnnotationId the annotation id to start from when new 
+   * annotations are added to this set in the Bdoc document.
    * @return modified BdocDocumentBuilder
    */
-  public BdocDocumentBuilder addSet(String name, Set<Annotation> annset) {
+  public BdocDocumentBuilder addSet(String name, Set<Annotation> annset, 
+          int nextAnnotationId) {
     includedSets.put(name, annset);
+    nextAnnotationIds.put(name, nextAnnotationId);
     return this;
   }
+
   
   /**
    * Add all features from the given (feature) map as document features.
@@ -243,7 +247,7 @@ public class BdocDocumentBuilder {
       for(String name : includedSets.keySet()) {     
         BdocAnnotationSet annset = new BdocAnnotationSet();
         annset.name = name;
-        annset.annotations = new ArrayList<BdocAnnotation>();
+        annset.annotations = new ArrayList<>();
         int max_annid = -1;
         for (Annotation ann : includedSets.get(name)) {
           BdocAnnotation bdocann = BdocAnnotation.fromGateAnnotation(ann);
@@ -252,7 +256,11 @@ public class BdocDocumentBuilder {
           }
           annset.annotations.add(bdocann);
         }
-        annset.max_annid = max_annid;
+        if(nextAnnotationIds.containsKey(name)) {
+          annset.max_annid = Math.max(max_annid, nextAnnotationIds.get(name));
+        } else {
+          annset.max_annid = max_annid;
+        }
         annotation_sets.put(annset.name, annset);
       }     
       ret.annotation_sets = annotation_sets;
