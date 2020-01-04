@@ -87,7 +87,7 @@ public class BdocDocumentBuilder {
    * "default" set uses the empty string as name. 
    * @param annset a set of annotations, could be an AnnotationSet or a set
    * of annotations.
-   * "param nextAnnotationId the annotation id to start from when new 
+   * @param nextAnnotationId the annotation id to start from when new 
    * annotations are added to this set in the Bdoc document.
    * @return modified BdocDocumentBuilder
    */
