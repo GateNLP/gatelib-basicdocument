@@ -248,18 +248,18 @@ public class BdocDocumentBuilder {
         BdocAnnotationSet annset = new BdocAnnotationSet();
         annset.name = name;
         annset.annotations = new ArrayList<>();
-        int max_annid = -1;
+        int next_annid = 0;
         for (Annotation ann : includedSets.get(name)) {
           BdocAnnotation bdocann = BdocAnnotation.fromGateAnnotation(ann);
-          if(bdocann.id > max_annid) {
-            max_annid = bdocann.id;
+          if(bdocann.id >= next_annid) {
+            next_annid = bdocann.id + 1;
           }
           annset.annotations.add(bdocann);
         }
         if(nextAnnotationIds.containsKey(name)) {
-          annset.max_annid = Math.max(max_annid, nextAnnotationIds.get(name));
+          annset.next_annid = Math.max(next_annid, nextAnnotationIds.get(name));
         } else {
-          annset.max_annid = max_annid;
+          annset.next_annid = next_annid;
         }
         annotation_sets.put(annset.name, annset);
       }     

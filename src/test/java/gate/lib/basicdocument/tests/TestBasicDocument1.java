@@ -72,7 +72,7 @@ public class TestBasicDocument1 extends TestCase {
     Assert.assertEquals(sampleText1, bdoc.text);
     BdocAnnotationSet bset = bdoc.annotation_sets.get("");
     Assert.assertEquals(3, bset.annotations.size());
-    Assert.assertEquals((Integer)2, bset.max_annid);
+    Assert.assertEquals((Integer)3, bset.next_annid);
     Assert.assertEquals("", bset.name);
     BdocAnnotation bann1 = new BdocAnnotation();  // suppress null pointer warning
     BdocAnnotation bann2 = bann1;
