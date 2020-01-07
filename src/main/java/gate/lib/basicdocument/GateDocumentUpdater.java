@@ -33,22 +33,22 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: use offset mapper when copying over the annotations from Tdoc/changelog
+// TODO: use offset mapper when copying over the annotations from bdoc/changelog
 //   in case those offsets are type python
 
 
 
 /**
- * A class that allows to update a GATE document from a TextDocument
+ * A class that allows to update a GATE document from a BasicDocument
  *
- * @author Johann Petrak johann.petrak@gmail.com
+ * @author Johann Petrak
  */
 public class GateDocumentUpdater {
 
   /**
    * What to do when adding an annotation that already exists in the document.
    */
-  public enum HandleExistingAnns {
+  public static enum HandleExistingAnns {
     /**
      * Completely replace the annotation with the new one.
      */
@@ -78,7 +78,7 @@ public class GateDocumentUpdater {
   /**
    * What to do when adding a new annotation.
    */
-  public enum HandleNewAnns {
+  public static enum HandleNewAnns {
     /**
      * Add as a new annotation with a new id.
      */
@@ -219,37 +219,87 @@ public class GateDocumentUpdater {
   }
   
 
+  /**
+   * Add an annotation to the GATE annotation set.
+   * This uses the information from a changelog or a bdoc document to
+   * add an annotation to the GATE annotation set, or update an annotation.
+   * The flags handleNewAnns and handleExistingAnns are used to influence 
+   * the behavior. 
+   * @param gateset the GATE annotation set to update
+   * @param bdocannid  the annotation id of the annotation from changelog/bdoc
+   * @param startoffset start offset
+   * @param endoffset end offset
+   * @param bdoctype annotation type
+   * @param bdocfeatures annotation features
+   */
   private void addAnnotation(AnnotationSet gateset,
-          int annid, int tdocstart, int tdocend, String tdoctype,
-          Map<String, Object> tdocfeatures, String offsetType) {
-    Annotation gateann = gateset.get(annid);
-    Map<String, Object> tmpmap = 
-            (tdocfeatures == null)
+          int bdocannid, int bdocstart, int bdocend, String bdoctype,
+          Map<String, Object> bdocfeatures, String offsetType) {
+    // make sure we always have the offsets as java offsets
+    long startoffset = convertOffset(bdocstart, offsetType);
+    long endoffset = convertOffset(bdocend, offsetType);
+    
+    // make sure we always have a non-null feature map, use a new empty one
+    // if necessary.
+    Map<String, Object> bdoc_fm = 
+            (bdocfeatures == null)
             ? new HashMap<>()
-            : tdocfeatures;
+            : bdocfeatures;
+    // try to get the annotation with the annotation id 
+    Annotation gateann = gateset.get(bdocannid);
+    
+    // Case 1: the annotation does not already exist and we want to add it
+    // with a new id
     if (gateann == null && handleNewAnns == HandleNewAnns.ADD_WITH_NEW_ID) {
       try {
-        gateset.add(
-                annid,
-                (long) tdocstart, (long) tdocend,
-                tdoctype, gate.Utils.toFeatureMap(tmpmap));
+        gateset.add(startoffset, endoffset,
+                bdoctype, gate.Utils.toFeatureMap(bdoc_fm));
       } catch (InvalidOffsetException ex) {
         throw new RuntimeException("Cannot add annotation", ex);
-      }      
-    } else if (gateann == null || handleExistingAnns == HandleExistingAnns.ADD_WITH_NEW_ID) {
+      }     
+    // Case 2: the annotation does not already exist and we want to add it 
+    // with its own existing id.
+    } else if (gateann == null && handleNewAnns == HandleNewAnns.ADD_WITH_BDOC_ID) {
       try {
-        gateset.add(
-                (long) tdocstart, (long) tdocend,
-                tdoctype, gate.Utils.toFeatureMap(tmpmap));
+        gateset.add(bdocannid,
+                startoffset, endoffset,
+                bdoctype, gate.Utils.toFeatureMap(bdoc_fm));
+      } catch (InvalidOffsetException ex) {
+        throw new RuntimeException("Cannot add annotation", ex);
+      }     
+    // Case 3: the annotation already exists but we want to add with a new id
+    } else if (gateann != null && handleExistingAnns == HandleExistingAnns.ADD_WITH_NEW_ID) {
+      try {
+        gateset.add(startoffset, endoffset,
+                bdoctype, gate.Utils.toFeatureMap(bdoc_fm));
       } catch (InvalidOffsetException ex) {
         throw new RuntimeException("Cannot add annotation", ex);
       }
-    } else {
+    // All other cases: we already have that annotation, and we want to do 
+    // something with it, depending on the HandleExistingAnns flag
+    } else if(gateann != null) {  // make null pointer checker happy
       // an annotation with this id already exists, choose what to do
       // first get the existing featuremap and map string feature names
       // to the original keys. in theory this could yield duplicates but
       // we do not care about this for now, those features really should all
       // have string names! null keys are ignored
+      
+      // NOTE: the offsets we get from the bdoc/chlog should correspond to
+      // the offsets of the existing annotation!
+      // We check this here to catch any bugs that may still exist!
+      if (!gateann.getStartNode().getOffset().equals(startoffset) ||
+          !gateann.getEndNode().getOffset().equals(endoffset)) {
+        throw new GateRuntimeException(
+                "Annotation offsets do not match for GATE annotation: "+
+                        gateann+
+                        " and bdoc/chlog annotation: from(orig)="+bdocstart+
+                        ", from(converted)="+startoffset+
+                        ", to(orig)="+bdocend+
+                        ", to(converted)="+endoffset
+        );
+      }
+      
+      
       FeatureMap gatefm = gateann.getFeatures();
       Map<String, Object> name2key = new HashMap<>();
       for (Object key : gatefm.keySet()) {
@@ -263,9 +313,9 @@ public class GateDocumentUpdater {
       // featuremap, use the name2key mapping
       switch (handleExistingAnns) {
         case ADD_NEW_FEATURES:
-          for (String fname : tmpmap.keySet()) {
+          for (String fname : bdoc_fm.keySet()) {
             if (!(name2key.containsKey(fname) && gatefm.containsKey(name2key.get(fname)))) {
-              gatefm.put(fname, tmpmap.get(fname));
+              gatefm.put(fname, bdoc_fm.get(fname));
             }
           }
           break;
@@ -276,21 +326,21 @@ public class GateDocumentUpdater {
           // I think there is no way to actually update need to remove and add with id
           gateset.remove(gateann);
           try {
-            gateset.add(annid, (long) tdocstart, (long) tdocend,
-                    tdoctype, gate.Utils.toFeatureMap(tmpmap));
+            gateset.add(bdocannid, startoffset, endoffset,
+                    bdoctype, gate.Utils.toFeatureMap(bdoc_fm));
           } catch (InvalidOffsetException ex) {
             throw new RuntimeException("Cannot add annotation", ex);
           }
           break;
         case REPLACE_FEATURES:
           gatefm.clear();
-          for (String fname : tmpmap.keySet()) {
-            gatefm.put(fname, tmpmap.get(fname));
+          for (String fname : bdoc_fm.keySet()) {
+            gatefm.put(fname, bdoc_fm.get(fname));
           }
           break;
         case UPDATE_FEATURES:
-          tmpmap.keySet().forEach((fname) -> {
-            gatefm.put(fname, tmpmap.get(fname));
+          bdoc_fm.keySet().forEach((fname) -> {
+            gatefm.put(fname, bdoc_fm.get(fname));
         });
           break;
 
@@ -311,18 +361,18 @@ public class GateDocumentUpdater {
     } else {
       gateset = gateDocument.getAnnotations(setname);
     }
-    annset.annotations.forEach((tdocann) -> {
+    annset.annotations.forEach((bdocann) -> {
       addAnnotation(gateset,
-              tdocann.id, tdocann.start, tdocann.end, tdocann.type,
-              tdocann.features, offsetType);
+              bdocann.id, bdocann.start, bdocann.end, bdocann.type,
+              bdocann.features, offsetType);
     });
   }
 
   /**
    * Actually carry out the update of the GATE document from the BdocDocument.
+   * 
    * This carries out the update with whatever options have been set.
-   *
-   *
+   * 
    * @param bdoc the bdoc to use for the updates
    * @return the updated GATE document
    */
@@ -352,9 +402,10 @@ public class GateDocumentUpdater {
   }
 
   /**
-   * Actually carry out the update of the GATE document from the TdocChangeLog.This carries out the update with whatever options have been set.
-   *
-   *
+   * Actually carry out the update of the GATE document from the Bdoc ChangeLog.
+   * 
+   * This carries out the update with whatever options have been set.
+   * 
    * @param chlog the changelog to use for the updates
    * @return returns the updated GATE document 
    */
@@ -441,9 +492,40 @@ public class GateDocumentUpdater {
             annset.clear();
           }
           break;
+        case "annotations:remove":
+          if (setname != null) {
+            if (setname.isEmpty() && annset != null) {
+              annset.clear();
+            } else {
+              gateDocument.removeAnnotationSet(setname);
+            }
+          }
+          break;
       }
 
     }
     return gateDocument;
   }
+  
+  /**
+   * This converts the given offset from python to java, if necessary.
+   * If the offsetType is python, then the offset mapper is used to convert
+   * the offset to Java, and if we do not have an offset mapper yet, we 
+   * create it on the fly.
+   * 
+   * @param offset the offset from the bdoc or changelog to convert
+   * @param offsetType the offset type of the bdoc or changelog
+   * @return  converted offset, if necessary
+   */
+  private long convertOffset(int offset, String offsetType) {
+    if("p".equals(offsetType)) {
+      if(offsetMapper == null) {
+        offsetMapper = new OffsetMapper(gateDocument.getContent().toString());
+      }
+      return (long)offsetMapper.convertToJava(offset);
+    } else {
+      return (long)offset;
+    }
+  }
+  
 }

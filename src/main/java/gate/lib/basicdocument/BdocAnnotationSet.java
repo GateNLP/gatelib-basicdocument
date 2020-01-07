@@ -44,10 +44,9 @@ public class BdocAnnotationSet {
   public List<BdocAnnotation> annotations;
   
   /**
-   * Contains the id to use for new
-   * annotations.
+   * Contains the next id to use for new annotations.
    */
-  public Integer max_annid; 
+  public Integer next_annid; 
 
   /**
    * Type identifier.

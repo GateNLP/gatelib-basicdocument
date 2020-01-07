@@ -29,10 +29,12 @@ import gate.lib.basicdocument.BdocAnnotationSet;
 import gate.lib.basicdocument.BdocAnnotation;
 import gate.lib.basicdocument.BdocDocument;
 import gate.lib.basicdocument.BdocDocumentBuilder;
+import gate.lib.basicdocument.OffsetMapper;
 import gate.lib.basicdocument.docformats.SimpleJson;
 import gate.util.GateException;
 import gate.util.InvalidOffsetException;
 import java.io.File;
+import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,6 +45,7 @@ import org.junit.Test;
  */
 public class TestBasicDocument1 extends TestCase {
   String sampleText1 = "This is a simple 💩 document. It has two sentences.";
+  String sampleText2 = "A \uD83D\uDCA9 emoji";
   
   @Override
   public void setUp() throws GateException {
@@ -51,8 +54,8 @@ public class TestBasicDocument1 extends TestCase {
   
   /**
    * Run a test.
-   * @throws ResourceInstantiationException should not happen
-   * @throws InvalidOffsetException  should not happen
+   * @throws ResourceInstantiationException if error
+   * @throws InvalidOffsetException  if error
    */
   @Test
   public void testBasic1() throws ResourceInstantiationException, InvalidOffsetException {
@@ -69,7 +72,7 @@ public class TestBasicDocument1 extends TestCase {
     Assert.assertEquals(sampleText1, bdoc.text);
     BdocAnnotationSet bset = bdoc.annotation_sets.get("");
     Assert.assertEquals(3, bset.annotations.size());
-    Assert.assertEquals((Integer)2, bset.max_annid);
+    Assert.assertEquals((Integer)3, bset.next_annid);
     Assert.assertEquals("", bset.name);
     BdocAnnotation bann1 = new BdocAnnotation();  // suppress null pointer warning
     BdocAnnotation bann2 = bann1;
@@ -117,6 +120,30 @@ public class TestBasicDocument1 extends TestCase {
     System.err.println("the set: "+bset2.getClass().getName());
     Assert.assertTrue(bset2.getClass().getName().equals("gate.lib.basicdocument.BdocAnnotationSet"));
   }
-  
+
+  /**
+   * Test offset mapping.
+   * @throws ResourceInstantiationException if error
+   * @throws InvalidOffsetException  if error
+   */
+  @Test
+  public void testOffsetMappings1() throws ResourceInstantiationException, InvalidOffsetException {
+    Document doc = Factory.newDocument(sampleText2);
+    AnnotationSet defSet = doc.getAnnotations();
+    // System.err.println("DEBUG: text len="+sampleText2.length());
+    OffsetMapper om = new OffsetMapper(sampleText2);
+    List<Integer> p2j = om.getPython2JavaList();
+    List<Integer> j2p = om.getJava2PythonList();
+    // System.err.println("DEBUG: j2p="+j2p);
+    // System.err.println("DEBUG: p2j="+p2j);
+    Assert.assertEquals(11, j2p.size());
+    Assert.assertEquals(10, p2j.size());
+    int[] j2p_expected = {0,1,2,2,3,4,5,6,7,8,9};
+    int[] p2j_expected = {0,1,2,4,5,6,7,8,9,10};
+    int[] j2p_actual = om.getJava2PythonArray();
+    int[] p2j_actual = om.getPython2JavaArray();
+    Assert.assertArrayEquals(j2p_expected, j2p_actual);
+    Assert.assertArrayEquals(p2j_expected, p2j_actual);
+  }
   
 }

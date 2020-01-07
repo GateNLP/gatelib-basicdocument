@@ -62,11 +62,18 @@ public class OffsetMapper {
         python2java_list.add(i);
       }
     }
+    // we also need to be able to convert an end offset for the last position 
+    // in the document, which is one beyond the actual document content.
+    // For this we add the previous offset plus one to the end of both lists
+    java2python_list.add(java2python_list.get(java2python_list.size()-1)+1);
+    python2java_list.add(python2java_list.get(python2java_list.size()-1)+1);
+    // System.err.println("DEBUG: j2p:"+java2python_list+" / len="+java2python_list.size());
+    // System.err.println("DEBUG: p2j:"+python2java_list+" / len="+python2java_list.size());
     java2python = 
             java2python_list.parallelStream().
                     mapToInt(Integer::intValue).toArray();
     python2java = 
-            java2python_list.parallelStream().
+            python2java_list.parallelStream().
                     mapToInt(Integer::intValue).toArray();
   }
   
@@ -86,10 +93,11 @@ public class OffsetMapper {
    * @return  python offset
    */
   public int convertToPython(int offset) {
-    if(offset >= 0 && offset < java2python.length) {
+    if(offset >= 0 && offset <= java2python.length) {
       return java2python[offset];
     } else {
-      throw new GateRuntimeException("Attempt to find offset outside of range");
+      throw new GateRuntimeException("Attempt to find python offset outside of range: "+
+              offset+" java length is "+java2python.length);
     }
   }
 
@@ -100,12 +108,56 @@ public class OffsetMapper {
    * @return java offset
    */
   public int convertToJava(int offset) {
-    if(offset >= 0 && offset < python2java.length) {
+    if(offset >= 0 && offset <= python2java.length) {
       return python2java[offset];
     } else {
-      throw new GateRuntimeException("Attempt to find offset outside of range");
+      throw new GateRuntimeException("Attempt to find java offset outside of range: "+
+              offset+" python length is "+python2java.length);
     }
   }
   
+  /**
+   * Return the java to python mapping as a List of Integers.
+   * 
+   * @return the mapping as a list
+   */
+  public List<Integer> getJava2PythonList() {
+    List<Integer> ret = new ArrayList<>(java2python.length);
+    for(int val : java2python) {
+      ret.add(val);
+    }
+    return ret;
+  }
+  
+  /**
+   * Return the python to java mapping as a List of Integers.
+   * 
+   * @return the mapping as a list
+   */
+  public List<Integer> getPython2JavaList() {
+    List<Integer> ret = new ArrayList<>(python2java.length);
+    for(int val : python2java) {
+      ret.add(val);
+    }
+    return ret;
+  }
+  
+  /**
+   * Return the java to python mapping as am array of ints.
+   * 
+   * @return the (original!) mapping as an array
+   */
+  public int[] getJava2PythonArray() {
+    return java2python;
+  }
+
+  /**
+   * Return the java to python mapping as am array of ints.
+   * 
+   * @return the (original!) mapping as an array
+   */
+  public int[] getPython2JavaArray() {
+    return python2java;
+  }
   
 }
