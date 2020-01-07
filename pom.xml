@@ -187,6 +187,7 @@
       <groupId>uk.ac.gate</groupId>
       <artifactId>gate-core</artifactId>
       <version>8.6</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
