@@ -51,8 +51,8 @@ public class TestBasicDocument1 extends TestCase {
   
   /**
    * Run a test.
-   * @throws ResourceInstantiationException
-   * @throws InvalidOffsetException 
+   * @throws ResourceInstantiationException should not happen
+   * @throws InvalidOffsetException  should not happen
    */
   @Test
   public void testBasic1() throws ResourceInstantiationException, InvalidOffsetException {
