@@ -118,7 +118,7 @@
           <showDeprecation>true</showDeprecation>
           <compilerArgs>
             <arg>-Xlint:all</arg>
-            <arg>-Xdoclint:all/public</arg>
+            <!-- <arg>-Xdoclint:all/public</arg>  SEE https://bugs.openjdk.java.net/browse/JDK-8186647  -->
           </compilerArgs>
         </configuration>
       </plugin>
@@ -186,7 +186,7 @@
     <dependency>
       <groupId>uk.ac.gate</groupId>
       <artifactId>gate-core</artifactId>
-      <version>8.6</version>
+      <version>8.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
