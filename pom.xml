@@ -118,6 +118,7 @@
           <showDeprecation>true</showDeprecation>
           <compilerArgs>
             <arg>-Xlint:all</arg>
+            <arg>-Xlint:-processing</arg> <!-- silence stupid warning about non-claimed annotation org.junit.Test -->
             <!-- <arg>-Xdoclint:all/public</arg>  SEE https://bugs.openjdk.java.net/browse/JDK-8186647  -->
           </compilerArgs>
         </configuration>
@@ -174,7 +175,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
+        <version>3.1.1</version>
         <configuration>
           <failOnError>false</failOnError>
           <additionalparam>-Xdoclint:none</additionalparam>
@@ -234,4 +235,27 @@
   </distributionManagement>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
+  <profiles>
+    <profile>
+      <id>gpg-sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>  
 </project>
