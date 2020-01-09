@@ -313,9 +313,9 @@ public class GateDocumentUpdater {
       // featuremap, use the name2key mapping
       switch (handleExistingAnns) {
         case ADD_NEW_FEATURES:
-          for (String fname : bdoc_fm.keySet()) {
-            if (!(name2key.containsKey(fname) && gatefm.containsKey(name2key.get(fname)))) {
-              gatefm.put(fname, bdoc_fm.get(fname));
+          for (Map.Entry<String, Object> entry : bdoc_fm.entrySet()) {
+            if (!(name2key.containsKey(entry.getKey()) && gatefm.containsKey(name2key.get(entry.getKey())))) {
+              gatefm.put(entry.getKey(), entry.getValue());
             }
           }
           break;
@@ -334,8 +334,8 @@ public class GateDocumentUpdater {
           break;
         case REPLACE_FEATURES:
           gatefm.clear();
-          for (String fname : bdoc_fm.keySet()) {
-            gatefm.put(fname, bdoc_fm.get(fname));
+          for (Map.Entry<String, Object> entry : bdoc_fm.entrySet()) {
+            gatefm.put(entry.getKey(), entry.getValue());
           }
           break;
         case UPDATE_FEATURES:
@@ -501,6 +501,8 @@ public class GateDocumentUpdater {
             }
           }
           break;
+        default:
+          throw new GateRuntimeException("Invalid action in changelog: "+cmd);
       }
 
     }

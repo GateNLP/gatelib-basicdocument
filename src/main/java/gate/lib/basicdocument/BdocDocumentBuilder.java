@@ -50,7 +50,6 @@ public class BdocDocumentBuilder {
   HashMap<String,Set<Annotation>> includedSets = new HashMap<>();
   HashMap<String,Integer> nextAnnotationIds = new HashMap<>();
   HashMap<String, Object> includedFeatures = new HashMap<>();
-  File toFile = null;
   String offset_type = "j";
   List<JSON.Feature> addJSONFeatures = new ArrayList<>();
 
@@ -244,20 +243,20 @@ public class BdocDocumentBuilder {
     }
     if(includedSets.size() > 0) {
       HashMap<String, BdocAnnotationSet> annotation_sets = new HashMap<>();
-      for(String name : includedSets.keySet()) {     
+      for(Map.Entry<String, Set<Annotation>> entry : includedSets.entrySet()) {     
         BdocAnnotationSet annset = new BdocAnnotationSet();
-        annset.name = name;
+        annset.name = entry.getKey();
         annset.annotations = new ArrayList<>();
         int next_annid = 0;
-        for (Annotation ann : includedSets.get(name)) {
+        for (Annotation ann : entry.getValue()) {
           BdocAnnotation bdocann = BdocAnnotation.fromGateAnnotation(ann);
           if(bdocann.id >= next_annid) {
             next_annid = bdocann.id + 1;
           }
           annset.annotations.add(bdocann);
         }
-        if(nextAnnotationIds.containsKey(name)) {
-          annset.next_annid = Math.max(next_annid, nextAnnotationIds.get(name));
+        if(nextAnnotationIds.containsKey(entry.getKey())) {
+          annset.next_annid = Math.max(next_annid, nextAnnotationIds.get(entry.getKey()));
         } else {
           annset.next_annid = next_annid;
         }
@@ -297,7 +296,7 @@ public class BdocDocumentBuilder {
   public void dump(File path) {
     try {
       BdocDocument jsondoc = buildBdoc();
-      initialJSON().write(jsondoc, toFile);
+      initialJSON().write(jsondoc, path);
     } catch (IOException ex) {
       throw new RuntimeException("Could not build and save JSON", ex);
     }

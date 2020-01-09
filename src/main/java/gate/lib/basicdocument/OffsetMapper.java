@@ -145,19 +145,19 @@ public class OffsetMapper {
   /**
    * Return the java to python mapping as am array of ints.
    * 
-   * @return the (original!) mapping as an array
+   * @return the mapping as an array
    */
   public int[] getJava2PythonArray() {
-    return java2python;
+    return java2python.clone();
   }
 
   /**
    * Return the java to python mapping as am array of ints.
    * 
-   * @return the (original!) mapping as an array
+   * @return the mapping as an array
    */
   public int[] getPython2JavaArray() {
-    return python2java;
+    return python2java.clone();
   }
   
 }

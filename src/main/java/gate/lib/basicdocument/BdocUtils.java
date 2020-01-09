@@ -48,12 +48,12 @@ public class BdocUtils {
     } else {
       ret = map;
     }
-    for(Object k : fm.keySet()) {
-      if (k == null) {
+    for(Map.Entry<Object, Object> entry : fm.entrySet()) {
+      if (entry.getKey() == null) {
         // we ignore null keys here, if we have any
         continue;
       }
-      ret.put((k instanceof String) ? (String)k : k.toString(), fm.get(k));
+      ret.put((entry.getKey() instanceof String) ? (String)entry.getKey() : entry.getKey().toString(), entry.getValue());
     }
     return ret; 
   }
