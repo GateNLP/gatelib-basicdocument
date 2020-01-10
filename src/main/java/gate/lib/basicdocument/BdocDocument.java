@@ -107,7 +107,7 @@ public class BdocDocument
   /**
    * Type identifier.
    */
-  public static final String gatenlp_type = "Document";
+  public String gatenlp_type = "Document";
 
   /**
    * Convert this BdocDocument instance to a GATE document. 

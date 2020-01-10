@@ -4,6 +4,10 @@
      <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
    </Match>
    <Match>
+     <Field name="gatenlp_type"/>
+     <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" />
+   </Match>
+   <Match>
      <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR" />
    </Match>
 

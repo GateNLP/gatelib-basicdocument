@@ -51,6 +51,6 @@ public class BdocAnnotationSet {
   /**
    * Type identifier.
    */
-  public static final String gatenlp_type = "AnnotationSet";
+  public String gatenlp_type = "AnnotationSet";
   
 }

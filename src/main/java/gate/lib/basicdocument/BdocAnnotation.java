@@ -75,7 +75,7 @@ public class BdocAnnotation {
   /**
    * Type identifier.
    */
-  public static final String gatenlp_type = "Annotation";
+  public String gatenlp_type = "Annotation";
   
   
 }
